@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T5 LifeBook</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+
+    <link rel="stylesheet" href="styles.css?v=22">
+
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -50,12 +52,12 @@
 
         <div class="stat">
             <span>Km châssis</span>
-            <strong id="vehicleKm">170 000 km</strong>
+            <strong id="vehicleKm">170 060 km</strong>
         </div>
 
         <div class="stat">
             <span>Km moteur</span>
-            <strong id="engineKm">0 km • remplacé le 12/06/2026</strong>
+            <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
         </div>
     </section>
 
@@ -66,7 +68,7 @@
             <div class="progress-bar" id="vehicleProgress"></div>
         </div>
 
-        <p id="vehicleProgressText">170 000 / 400 000 km</p>
+        <p id="vehicleProgressText">170 060 / 400 000 km</p>
     </section>
 
     <section class="card">
@@ -81,16 +83,16 @@
     <section class="card hidden" id="maintenanceFormCard">
         <h2>➕ Ajouter un entretien</h2>
 
-        <label>Type d'entretien</label>
+        <label for="maintenanceType">Type d'entretien</label>
         <select id="maintenanceType"></select>
 
-        <label>Date</label>
+        <label for="maintenanceDate">Date</label>
         <input type="date" id="maintenanceDate">
 
-        <label>Kilométrage</label>
-        <input type="number" id="maintenanceKm" placeholder="Ex : 185000">
+        <label for="maintenanceKm">Kilométrage</label>
+        <input type="number" id="maintenanceKm" placeholder="Ex : 170060">
 
-        <label>Notes</label>
+        <label for="maintenanceNotes">Notes</label>
         <textarea id="maintenanceNotes" placeholder="Ex : huile 5W30 VW 507.00, pièces remplacées..."></textarea>
 
         <div class="button-row">
@@ -128,6 +130,6 @@
     T5 LifeBook © 2026
 </footer>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=22"></script>
 </body>
 </html>
