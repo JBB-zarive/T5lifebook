@@ -4,56 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T5 LifeBook</title>
+
     <link rel="stylesheet" href="styles.css">
+
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="T5 LifeBook">
 </head>
+
 <body>
-<header class="header">
-<h1>🚐 T5 LifeBook</h1>
-<p>Volkswagen T5 4Motion DSG - CFCA 180 ch</p>
-</header>
-<main class="container">
-<section class="card">
-<h2>📍 Kilométrage actuel</h2>
-<div class="input-group">
-<input type="number" id="currentKm" placeholder="Ex : 170250">
-<button id="saveKmBtn">Enregistrer</button>
-</div>
-<p id="lastUpdate">Dernière mise à jour : jamais</p>
-</section>
-<section class="card">
-<h2>🔧 Moteur Volkswagen 2024</h2>
-<div class="stat"><span>Kilométrage moteur</span><strong id="engineKm">0 km</strong></div>
-<div class="stat"><span>Date remplacement</span><strong>12/06/2026</strong></div>
-<div class="stat"><span>Garantie</span><strong>12/06/2028</strong></div>
-</section>
-<section class="card">
-<h2>🚐 Véhicule</h2>
-<div class="stat"><span>VIN</span><strong>WV1ZZZ7HZEH003985</strong></div>
-<div class="stat"><span>Immatriculation</span><strong>CW-374-CL</strong></div>
-<div class="stat"><span>Châssis</span><strong id="vehicleKm">170 000 km</strong></div>
-</section>
-<section class="card">
-<h2>🎯 Objectif 400 000 km</h2>
-<div class="progress-container"><div class="progress-bar" id="vehicleProgress"></div></div>
-<p id="vehicleProgressText">170 000 / 400 000 km</p>
-</section>
-<section class="card">
-<h2>🏁 Objectif moteur 300 000 km</h2>
-<div class="progress-container"><div class="progress-bar engine" id="engineProgress"></div></div>
-<p id="engineProgressText">0 / 300 000 km</p>
-</section>
-<section class="card"><h2>🛠 Entretien</h2><ul class="maintenance-list">
-<li>🟢 Vidange moteur : tous les 8 000 km</li>
-<li>🟢 DSG : tous les 60 000 km</li>
-<li>🟢 Haldex : tous les 60 000 km</li>
-<li>🟢 Filtre gasoil : tous les 30 000 km</li>
-</ul></section>
-<section class="card"><h2>📚 Historique kilométrique</h2><div id="historyList"><p>Aucun historique enregistré.</p></div></section>
-</main>
-<footer class="footer">T5 LifeBook © 2026</footer>
-<script src="app.js"></script>
-</body></html>
+
+    <header class="header">
+        <h1>🚐 T5 LifeBook</h1>
+        <p>Volkswagen T5 4Motion DSG - CFCA 180 ch</p>
+    </header>
+
+    <main class="container">
+
+        <!-- Carte kilométrage -->
+        <section class="card">
+            <h2>📍 Kilométrage actuel</h2>
+
+            <div class="input-group">
+                <input
+                    type="number"
+                    id="currentKm"
+                    placeholder="Ex : 170250"
+                >
+
+                <button id="saveKmBtn">
+                    Enregistrer
+                </button>
+            </div>
+
+            <p id="lastUpdate">
+                Dernière mise à jour : jamais
+            </p>
+        </section>
+
+
+        <!-- Carte véhicule -->
+        <section class="card">
+
+            <h2>🚐 Véhicule</h2>
+
+            <div class="stat">
+                <span>VIN</span>
+                <strong>
+                    WV1ZZZ7HZEH003985
+                </strong>
+            </div>
+
+            <div class="stat">
+                <span>Immatriculation</span>
+                <strong>
+                    CW-374-CL
+                </strong>
+            </div>
+
+            <div class="stat">
+                <span>Km châssis</span>
+                <strong id="vehicleKm">
+                    170 000 km
+                </strong>
+            </div>
+
+            <div class="stat">
+                <span>Km moteur</span>
+                <strong id="engineKm">
+                    0 km
+                </strong>
+            </div>
+
+            <div class="stat">
+                <span>Moteur remplacé</span>
+                <strong>
+                    12/06/2026
+                </strong>
+            </div>
+
+        </section>
+
+
+        <!-- Objectif châssis -->
+        <section class="card">
+
+            <h2>🎯 Objectif 400 000 km</h2>
+
+            <div class="progress-container">
+                <div
+                    class="progress-bar"
+                    id="vehicleProgress"
+                ></div>
+            </div>
+
+            <p id="vehicleProgressText">
+                170 000 / 400 000 km
+            </p>
+
+        </section>
+
+
+        <!-- Objectif moteur -->
+        <section class="card">
+
+            <h2>🏁 Objectif moteur 300 000 km</h2>
+
+            <div class="progress-container">
+                <div
+                    class="progress-bar engine"
+                    id="engineProgress"
+                ></div>
+            </div>
+
+            <p id="engineProgressText">
+                0 / 300 000 km
+            </p>
+
+        </section>
+
+
+        <!-- Entretien -->
+        <section class="card">
+
+            <h2>🛠 Entretien</h2>
+
+            <ul class="maintenance-list">
+
+                <li>
+                    🟢 Vidange moteur : tous les 8 000 km
+                </li>
+
+                <li>
+                    🟢 DSG : tous les 60 000 km
+                </li>
+
+                <li>
+                    🟢 Haldex : tous les 60 000 km
+                </li>
+
+                <li>
+                    🟢 Filtre gasoil : tous les 30 000 km
+                </li>
+
+            </ul>
+
+        </section>
+
+
+        <!-- Historique kilométrique -->
+        <section class="card">
+
+            <h2>📚 Historique kilométrique</h2>
+
+            <div id="historyList">
+                <p>
+                    Aucun historique enregistré.
+                </p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        T5 LifeBook © 2026
+    </footer>
+
+    <script src="app.js"></script>
+
+</body>
+</html>
