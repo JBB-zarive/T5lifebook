@@ -1,7 +1,7 @@
 // =======================================
-// T5 LifeBook - app.js V2.3 Cloud
+// T5 LifeBook - app.js V2.3.1 Cloud Correctif
 // Google Sheets : écriture + restauration
-// Protection anti-effacement localStorage
+// Correction mapping colonnes + dédoublonnage
 // =======================================
 
 const ENGINE_REPLACEMENT_KM = 170060;
@@ -12,8 +12,8 @@ const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4Or
 
 const MAINTENANCE_TYPES = [
     { name: "Vidange moteur + filtre", interval: 8000 },
-    { name: "Vidange DSG", interval: 80000 },
-    { name: "Vidange Haldex", interval: 80000 },
+    { name: "Vidange DSG", interval: 60000 },
+    { name: "Vidange Haldex", interval: 60000 },
     { name: "Filtre gasoil", interval: 30000 },
     { name: "Filtre à air", interval: 30000 },
     { name: "Liquide de frein", interval: null },
@@ -207,6 +207,7 @@ function saveKilometrage() {
     localStorage.setItem("t5_vehicle_km", String(newKm));
 
     const history = getKmHistory();
+
     const entry = {
         id: makeId(),
         date: dateLabel,
@@ -216,9 +217,20 @@ function saveKilometrage() {
     };
 
     history.unshift(entry);
-    localStorage.setItem("t5_km_history", JSON.stringify(history));
 
-    syncRow("kilometrages", [dateLabel, newKm, engineKm]);
+    localStorage.setItem(
+        "t5_km_history",
+        JSON.stringify(dedupeKilometrages(history))
+    );
+
+    syncRow("kilometrages", [
+        entry.id,
+        entry.date,
+        entry.km,
+        entry.engineKm,
+        "saisie",
+        ""
+    ]);
 
     input.value = "";
     updateDashboard();
@@ -319,9 +331,14 @@ function saveMaintenance() {
 
     const maintenances = getMaintenances();
     maintenances.unshift(maintenance);
-    localStorage.setItem("t5_maintenances", JSON.stringify(maintenances));
+
+    localStorage.setItem(
+        "t5_maintenances",
+        JSON.stringify(dedupeMaintenances(maintenances))
+    );
 
     syncRow("entretiens", [
+        maintenance.id,
         maintenance.date,
         maintenance.km,
         maintenance.engineKm,
@@ -409,7 +426,9 @@ function testCloud() {
     syncRow("sync_log", [
         new Date().toLocaleString("fr-FR"),
         "test",
-        "Test depuis T5 LifeBook"
+        "Test depuis T5 LifeBook",
+        "",
+        ""
     ]);
 
     updateCloudStatus("Test envoyé vers Google Sheets.");
@@ -422,17 +441,33 @@ function syncAll() {
     }
 
     getKmHistory().forEach(item => {
-        syncRow("kilometrages", [item.date, item.km, item.engineKm]);
+        syncRow("kilometrages", [
+            item.id || makeId(),
+            item.date,
+            item.km,
+            item.engineKm,
+            "app",
+            ""
+        ]);
     });
 
     getMaintenances().forEach(item => {
-        syncRow("entretiens", [item.date, item.km, item.engineKm, item.type, item.notes]);
+        syncRow("entretiens", [
+            item.id || makeId(),
+            item.date,
+            item.km,
+            item.engineKm,
+            item.type,
+            item.notes
+        ]);
     });
 
     syncRow("sync_log", [
         new Date().toLocaleString("fr-FR"),
         "sync_all",
-        "Synchronisation complète demandée"
+        "Synchronisation complète demandée",
+        "",
+        ""
     ]);
 
     updateCloudStatus("Synchronisation envoyée.");
@@ -504,16 +539,17 @@ async function fetchCloudData() {
 function applyCloudData(cloudData) {
     const kmHistory = (cloudData.kilometrages || [])
         .map((row, index) => {
-            const date = String(row[0] || "");
-            const km = parseInt(row[1], 10);
-            const engineKm = parseInt(row[2], 10);
+            const id = String(row[0] || "cloud-km-" + index);
+            const date = String(row[1] || "");
+            const km = parseInt(row[2], 10);
+            const engineKm = parseInt(row[3], 10);
 
-            if (!km) return null;
+            if (isNaN(km) || km <= 0) return null;
 
             return {
-                id: "cloud-km-" + index + "-" + km,
+                id,
                 date: date || "Date inconnue",
-                km: km,
+                km,
                 engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
                 createdAt: parseDateForSort(date).toISOString()
             };
@@ -523,33 +559,73 @@ function applyCloudData(cloudData) {
 
     const maintenances = (cloudData.entretiens || [])
         .map((row, index) => {
-            const date = normalizeCloudDate(row[0]);
-            const km = parseInt(row[1], 10);
-            const engineKm = parseInt(row[2], 10);
-            const type = String(row[3] || "Autre");
-            const notes = String(row[4] || "");
+            const id = String(row[0] || "cloud-maintenance-" + index);
+            const date = normalizeCloudDate(row[1]);
+            const km = parseInt(row[2], 10);
+            const engineKm = parseInt(row[3], 10);
+            const type = String(row[4] || "Autre");
+            const notes = String(row[5] || "");
 
-            if (!km) return null;
+            if (isNaN(km) || km <= 0) return null;
 
             return {
-                id: "cloud-maintenance-" + index + "-" + km,
-                type: type || "Autre",
-                date: date,
-                km: km,
+                id,
+                type,
+                date,
+                km,
                 engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
-                notes: notes,
+                notes,
                 createdAt: date + "T12:00:00"
             };
         })
         .filter(Boolean);
 
-    const latestKm = kmHistory.length
-        ? Math.max(...kmHistory.map(item => item.km))
-        : 170060;
+    const cleanKmHistory = dedupeKilometrages(kmHistory);
+    const cleanMaintenances = dedupeMaintenances(maintenances);
+
+    const latestKmFromHistory = cleanKmHistory.length
+        ? Math.max(...cleanKmHistory.map(item => item.km))
+        : 0;
+
+    const latestKmFromMaintenance = cleanMaintenances.length
+        ? Math.max(...cleanMaintenances.map(item => item.km))
+        : 0;
+
+    const latestKm = Math.max(
+        latestKmFromHistory,
+        latestKmFromMaintenance,
+        170060
+    );
 
     localStorage.setItem("t5_vehicle_km", String(latestKm));
-    localStorage.setItem("t5_km_history", JSON.stringify(kmHistory));
-    localStorage.setItem("t5_maintenances", JSON.stringify(maintenances));
+    localStorage.setItem("t5_km_history", JSON.stringify(cleanKmHistory));
+    localStorage.setItem("t5_maintenances", JSON.stringify(cleanMaintenances));
+}
+
+function dedupeKilometrages(items) {
+    const unique = new Map();
+
+    items.forEach(item => {
+        const key = `${item.date}|${item.km}`;
+        if (!unique.has(key)) {
+            unique.set(key, item);
+        }
+    });
+
+    return Array.from(unique.values());
+}
+
+function dedupeMaintenances(items) {
+    const unique = new Map();
+
+    items.forEach(item => {
+        const key = `${item.date}|${item.km}|${item.type}`;
+        if (!unique.has(key)) {
+            unique.set(key, item);
+        }
+    });
+
+    return Array.from(unique.values());
 }
 
 function syncRow(table, values) {
