@@ -11,9 +11,9 @@ const ENGINE_REPLACEMENT_DATE_FR = "19/06/2026";
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4OrwPxOdujpoAYIwCRGURSy067ljj2Q3egID6NhC-5_lKlf0-00Exn9ttZA/exec";
 
 const MAINTENANCE_TYPES = [
-    { name: "Vidange moteur + filtre", interval: 8000 },
-    { name: "Vidange DSG", interval: 60000 },
-    { name: "Vidange Haldex", interval: 60000 },
+    { name: "Vidange moteur + filtre", interval: 10000 },
+    { name: "Vidange DSG", interval: 80000 },
+    { name: "Vidange Haldex", interval: 80000 },
     { name: "Filtre gasoil", interval: 30000 },
     { name: "Filtre à air", interval: 30000 },
     { name: "Liquide de frein", interval: null },
