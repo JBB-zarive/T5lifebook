@@ -1,1 +1,62 @@
-body{background:#0f172a;color:#f8fafc;font-family:Arial,sans-serif;margin:0}.header{text-align:center;padding:20px}.container{width:min(1100px,95%);margin:auto;display:grid;gap:20px}.card{background:#1e293b;padding:20px;border-radius:18px}.input-group{display:flex;gap:10px;flex-wrap:wrap}input,button{padding:12px;border-radius:12px;border:none}button{background:#2563eb;color:white}.stat{display:flex;justify-content:space-between;padding:8px 0}.progress-container{background:#0b1220;height:22px;border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:42%;background:#2563eb}.engine{background:#16a34a}.history-item{background:#0b1220;padding:12px;border-radius:12px;margin:10px 0}.footer{text-align:center;padding:20px;color:#94a3b8}
+/* ===================================
+   Ajustements iPhone - titres compacts
+=================================== */
+
+.card h2 {
+    font-size: 1rem;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+
+    .header {
+        padding: 18px 12px;
+    }
+
+    .header h1 {
+        font-size: 1.35rem;
+        line-height: 1.15;
+        white-space: nowrap;
+    }
+
+    .header p {
+        font-size: 0.78rem;
+        line-height: 1.25;
+    }
+
+    .container {
+        width: 94%;
+        gap: 14px;
+    }
+
+    .card {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .card h2 {
+        font-size: 0.88rem;
+        line-height: 1.15;
+        margin-bottom: 13px;
+        white-space: nowrap;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .stat {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .stat strong {
+        text-align: left;
+    }
+}
