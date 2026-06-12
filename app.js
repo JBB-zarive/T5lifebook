@@ -109,18 +109,25 @@ function getEngineKm(vehicleKm) {
 }
 
 // Progress bars
-function updateProgressBars(vehicleKm, engineKm) {
-    const vehiclePercent = Math.min((vehicleKm / VEHICLE_GOAL_KM) * 100, 100);
-    const enginePercent = Math.min((engineKm / ENGINE_GOAL_KM) * 100, 100);
+function mettreAJourLesBarresDeProgression(véhiculeKm, moteurKm) {
+    const pourcentageDuVéhicule = Math.min(
+        (véhiculeKm / OBJECTIF_VÉHICULE_KM) * 100,
+        100
+    );
 
-    vehicleProgress.style.width = vehiclePercent + "%";
-    engineProgress.style.width = enginePercent + "%";
+    const moteurPourcentage = Math.min(
+        (moteurKm / ENGINE_GOAL_KM) * 100,
+        100
+    );
 
-    vehicleProgressText.innerText =
-        `${formatKm(vehicleKm)} / ${formatKm(VEHICLE_GOAL_KM)}`;
+    progrèsDuVéhicule.style.width = pourcentageDuVéhicule + "%";
+    moteurProgress.style.width = moteurPourcentage + "%";
 
-    engineProgressText.innerText =
-        `${formatKm(engineKm)} / ${formatKm(ENGINE_GOAL_KM)}`;
+    texteDeProgressionDuVéhicule.textContent =
+        `${formatKm(véhiculeKm)} / ${formatKm(OBJECTIF_VÉHICULE_KM)}`;
+
+    moteurProgressText.textContent =
+        `${formatKm(moteurKm)} / ${formatKm(ENGINE_GOAL_KM)}`;
 }
 
 // Historique
