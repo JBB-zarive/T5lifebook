@@ -1,62 +1,358 @@
 /* ===================================
-   Ajustements iPhone - titres compacts
+   T5 LifeBook - styles.css V1
+   Dark Mode Premium
 =================================== */
 
-.card h2 {
-    font-size: 1rem;
-    line-height: 1.2;
+:root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #273549;
+
+    --text: #f8fafc;
+    --text-secondary: #94a3b8;
+
+    --blue: #2563eb;
+    --green: #16a34a;
+    --orange: #ea580c;
+    --red: #dc2626;
+
+    --border: #334155;
+
+    --shadow:
+        0 10px 30px rgba(0,0,0,0.25);
+
+    --radius: 18px;
+}
+
+/* ===============================
+   Reset
+================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        sans-serif;
+
+    min-height: 100vh;
+}
+
+/* ===============================
+   Header
+================================ */
+
+.header {
+    padding: 18px 12px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 1.35rem;
+    margin-bottom: 8px;
     white-space: nowrap;
 }
 
+.header p {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+/* ===============================
+   Container
+================================ */
+
+.container {
+    width: min(1100px, 94%);
+    margin: auto;
+
+    display: grid;
+    gap: 14px;
+
+    padding-bottom: 50px;
+}
+
+/* ===============================
+   Cards
+================================ */
+
+.card {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 15px;
+
+    box-shadow: var(--shadow);
+
+    transition: 0.25s;
+}
+
+.card:hover {
+    background: var(--card-hover);
+}
+
+.card h2 {
+    margin-bottom: 13px;
+    font-size: 0.88rem;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+/* ===============================
+   Input
+================================ */
+
+.input-group {
+
+    display: flex;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+input[type="number"] {
+
+    flex: 1;
+
+    min-width: 180px;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+
+    background: #0b1220;
+
+    color: white;
+
+    font-size: 1rem;
+}
+
+input:focus {
+
+    outline: none;
+
+    border-color: var(--blue);
+}
+
+/* ===============================
+   Buttons
+================================ */
+
+button {
+
+    background: var(--blue);
+
+    color: white;
+
+    border: none;
+
+    padding: 14px 22px;
+
+    border-radius: 12px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    width: 100%;
+}
+
+button:hover {
+
+    transform: translateY(-2px);
+
+    opacity: 0.95;
+}
+
+button:active {
+
+    transform: scale(0.98);
+}
+
+/* ===============================
+   Stats
+================================ */
+
+.stat {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.stat:last-child {
+    border-bottom: none;
+}
+
+.stat span {
+
+    color: var(--text-secondary);
+}
+
+.stat strong {
+
+    color: white;
+}
+
+/* ===============================
+   Progress bars
+================================ */
+
+.progress-container {
+
+    width: 100%;
+
+    height: 22px;
+
+    background: #0b1220;
+
+    border-radius: 999px;
+
+    overflow: hidden;
+
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+
+    width: 42%;
+
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #60a5fa
+    );
+
+    border-radius: 999px;
+
+    transition: width 0.5s ease;
+}
+
+.progress-bar.engine {
+
+    background: linear-gradient(
+        90deg,
+        #16a34a,
+        #4ade80
+    );
+}
+
+/* ===============================
+   Maintenance list
+================================ */
+
+.maintenance-list {
+
+    list-style: none;
+}
+
+.maintenance-list li {
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid var(--border);
+
+    font-size: 0.9rem;
+}
+
+.maintenance-list li:last-child {
+    border-bottom: none;
+}
+
+/* ===============================
+   History
+================================ */
+
+.history-item {
+
+    background: #0b1220;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    margin-bottom: 10px;
+
+    border-left: 4px solid var(--blue);
+}
+
+.history-item small {
+
+    color: var(--text-secondary);
+}
+
+/* ===============================
+   Last update
+================================ */
+
+#lastUpdate {
+
+    margin-top: 12px;
+
+    color: var(--text-secondary);
+
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   Footer
+================================ */
+
+.footer {
+
+    text-align: center;
+
+    color: var(--text-secondary);
+
+    padding: 25px;
+
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   Responsive iPhone
+================================ */
+
 @media (max-width: 700px) {
 
-    .header {
-        padding: 18px 12px;
-    }
-
-    .header h1 {
-        font-size: 1.35rem;
-        line-height: 1.15;
-        white-space: nowrap;
-    }
-
-    .header p {
-        font-size: 0.78rem;
-        line-height: 1.25;
-    }
-
-    .container {
-        width: 94%;
-        gap: 14px;
-    }
-
-    .card {
-        padding: 15px;
-        border-radius: 15px;
-    }
-
-    .card h2 {
-        font-size: 0.88rem;
-        line-height: 1.15;
-        margin-bottom: 13px;
-        white-space: nowrap;
-    }
-
     .input-group {
-        flex-direction: column;
-    }
 
-    button {
-        width: 100%;
+        flex-direction: column;
     }
 
     .stat {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
 
-    .stat strong {
-        text-align: left;
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 6px;
     }
 }
