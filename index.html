@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T5 LifeBook</title>
-
-    <link rel="stylesheet" href="styles.css?v=1">
-
+    <link rel="stylesheet" href="styles.css?v=2">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,7 +12,6 @@
 </head>
 
 <body>
-
 <header class="header">
     <h1>🚐 T5 LifeBook</h1>
     <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
@@ -58,12 +55,7 @@
 
         <div class="stat">
             <span>Km moteur</span>
-            <strong id="engineKm">0 km</strong>
-        </div>
-
-        <div class="stat">
-            <span>Moteur remplacé</span>
-            <strong>12/06/2026</strong>
+            <strong id="engineKm">0 km • remplacé le 12/06/2026</strong>
         </div>
     </section>
 
@@ -78,30 +70,53 @@
     </section>
 
     <section class="card">
-        <h2>🏁 Objectif moteur 300 000 km</h2>
-
-        <div class="progress-container">
-            <div class="progress-bar engine" id="engineProgress"></div>
+        <div class="card-title-row">
+            <h2>🛠 Entretien</h2>
+            <button class="mini-btn" id="openMaintenanceBtn">+ Ajouter</button>
         </div>
 
-        <p id="engineProgressText">0 / 300 000 km</p>
+        <div id="maintenanceList"></div>
+    </section>
+
+    <section class="card hidden" id="maintenanceFormCard">
+        <h2>➕ Ajouter un entretien</h2>
+
+        <label>Type d'entretien</label>
+        <select id="maintenanceType"></select>
+
+        <label>Date</label>
+        <input type="date" id="maintenanceDate">
+
+        <label>Kilométrage</label>
+        <input type="number" id="maintenanceKm" placeholder="Ex : 185000">
+
+        <label>Notes</label>
+        <textarea id="maintenanceNotes" placeholder="Ex : huile 5W30 VW 507.00, pièces remplacées..."></textarea>
+
+        <div class="button-row">
+            <button id="saveMaintenanceBtn">Enregistrer</button>
+            <button class="secondary-btn" id="cancelMaintenanceBtn">Annuler</button>
+        </div>
     </section>
 
     <section class="card">
-        <h2>🛠 Entretien</h2>
+        <h2>☁️ Passerelle Google Sheets</h2>
 
-        <ul class="maintenance-list">
-            <li>🟢 Vidange moteur : tous les 8 000 km</li>
-            <li>🟢 Filtre à huile : tous les 8 000 km</li>
-            <li>🟢 DSG : tous les 60 000 km</li>
-            <li>🟢 Haldex : tous les 60 000 km</li>
-            <li>🟢 Filtre gasoil : tous les 30 000 km</li>
-        </ul>
+        <div class="input-group">
+            <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
+            <button id="saveCloudBtn">Enregistrer</button>
+        </div>
+
+        <div class="button-row">
+            <button class="secondary-btn" id="testCloudBtn">Tester</button>
+            <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
+        </div>
+
+        <p id="cloudStatus">Cloud : non configuré</p>
     </section>
 
     <section class="card">
-        <h2>📚 Historique kilométrique</h2>
-
+        <h2>📚 Historique</h2>
         <div id="historyList">
             <p>Aucun historique enregistré.</p>
         </div>
@@ -113,7 +128,6 @@
     T5 LifeBook © 2026
 </footer>
 
-<script src="app.js?v=1"></script>
-
+<script src="app.js?v=2"></script>
 </body>
 </html>
