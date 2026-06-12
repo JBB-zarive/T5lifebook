@@ -11,18 +11,19 @@ const DATA_VERSION = "2.2-final";
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4OrwPxOdujpoAYIwCRGURSy067ljj2Q3egID6NhC-5_lKlf0-00Exn9ttZA/exec";
 
 const MAINTENANCE_TYPES = [
-    { name: "Vidange moteur + filtre", interval: 8000 },
+    { name: "Vidange moteur + filtre", interval: 10000 },
     { name: "Vidange DSG", interval: 60000 },
     { name: "Vidange Haldex", interval: 60000 },
     { name: "Filtre gasoil", interval: 30000 },
     { name: "Filtre à air", interval: 30000 },
     { name: "Liquide de frein", interval: null },
+    { name: "Distribution", interval: 180000 },
     { name: "Freins", interval: null },
     { name: "Pneus", interval: null },
-    { name: "Distribution", interval: 180000 },
     { name: "Embrayage / volant moteur", interval: null },
     { name: "Remplacement turbos", interval: null },
     { name: "Train avant / géométrie", interval: null }
+    { name: "Autre", interval: null }
 ];
 
 const INITIAL_KM_HISTORY = [
