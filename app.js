@@ -23,6 +23,7 @@ const MAINTENANCE_TYPES = [
     { name: "Embrayage / volant moteur", interval: null },
     { name: "Remplacement turbos", interval: null },
     { name: "Train avant / géométrie", interval: null }
+    { name: "Autre", interval: null }
 ];
 
 const INITIAL_KM_HISTORY = [
