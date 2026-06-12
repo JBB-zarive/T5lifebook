@@ -11,19 +11,18 @@ const DATA_VERSION = "2.2-final";
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4OrwPxOdujpoAYIwCRGURSy067ljj2Q3egID6NhC-5_lKlf0-00Exn9ttZA/exec";
 
 const MAINTENANCE_TYPES = [
-    { name: "Vidange moteur + filtre", interval: 10000 },
-    { name: "Vidange DSG", interval: 80000 },
-    { name: "Vidange Haldex", interval: 80000 },
+    { name: "Vidange moteur + filtre", interval: 8000 },
+    { name: "Vidange DSG", interval: 60000 },
+    { name: "Vidange Haldex", interval: 60000 },
     { name: "Filtre gasoil", interval: 30000 },
     { name: "Filtre à air", interval: 30000 },
     { name: "Liquide de frein", interval: null },
-    { name: "Distribution", interval: 180000 },
     { name: "Freins", interval: null },
     { name: "Pneus", interval: null },
+    { name: "Distribution", interval: 180000 },
     { name: "Embrayage / volant moteur", interval: null },
     { name: "Remplacement turbos", interval: null },
     { name: "Train avant / géométrie", interval: null }
-    { name: "Autre", interval: null }
 ];
 
 const INITIAL_KM_HISTORY = [
@@ -43,7 +42,7 @@ const INITIAL_MAINTENANCES = [
         date: "2026-05-19",
         km: 169528,
         engineKm: 0,
-        notes: "Vidange moteur, filtre à huile",
+        notes: "Vidange moteur, filtre à huile, filtre à air, filtre à carburant, liquide de frein. Remplacement des silentblocs de barre stabilisatrice, triangle avant gauche, triangle avant droit, deux biellettes de barre stabilisatrice et contrôle de la géométrie.",
         createdAt: "2026-05-19T12:00:00"
     },
     {
@@ -124,7 +123,7 @@ const INITIAL_MAINTENANCES = [
         date: "2018-06-06",
         km: 99850,
         engineKm: 0,
-        notes: "Réalisée lors du remplacement complet de la boîte DSG.",
+        notes: "Supposée réalisée lors du remplacement complet de la boîte DSG. À confirmer si facture détaillée disponible.",
         createdAt: "2018-06-06T12:00:01"
     }
 ];
