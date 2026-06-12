@@ -2,22 +2,10 @@ const ENGINE_REPLACEMENT_KM = 170000;
 const VEHICLE_GOAL_KM = 400000;
 const ENGINE_GOAL_KM = 300000;
 
-const currentKmInput = document.getElementById("currentKm");
-const saveKmBtn = document.getElementById("saveKmBtn");
-
-const vehicleKmElement = document.getElementById("vehicleKm");
-const engineKmElement = document.getElementById("engineKm");
-
-const vehicleProgress = document.getElementById("vehicleProgress");
-const engineProgress = document.getElementById("engineProgress");
-
-const vehicleProgressText = document.getElementById("vehicleProgressText");
-const engineProgressText = document.getElementById("engineProgressText");
-
-const lastUpdateElement = document.getElementById("lastUpdate");
-const historyList = document.getElementById("historyList");
-
 document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("currentKm");
+    const button = document.getElementById("saveKmBtn");
+
     if (!localStorage.getItem("t5_vehicle_km")) {
         localStorage.setItem("t5_vehicle_km", "170000");
     }
@@ -26,63 +14,67 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("t5_history", JSON.stringify([]));
     }
 
-    refreshDashboard();
-});
+    button.addEventListener("click", () => {
+        const km = parseInt(input.value, 10);
+        const oldKm = parseInt(localStorage.getItem("t5_vehicle_km"), 10);
 
-saveKmBtn.addEventListener("click", () => {
-    const newKm = parseInt(currentKmInput.value, 10);
-    const oldKm = parseInt(localStorage.getItem("t5_vehicle_km"), 10);
+        if (isNaN(km) || km <= 0) {
+            alert("Kilométrage invalide.");
+            return;
+        }
 
-    if (isNaN(newKm) || newKm <= 0) {
-        alert("Kilométrage invalide.");
-        return;
-    }
+        if (km < oldKm) {
+            alert("Le kilométrage ne peut pas être inférieur au dernier enregistré.");
+            return;
+        }
 
-    if (newKm < oldKm) {
-        alert("Le kilométrage ne peut pas être inférieur au dernier enregistré.");
-        return;
-    }
+        localStorage.setItem("t5_vehicle_km", String(km));
 
-    localStorage.setItem("t5_vehicle_km", String(newKm));
+        const history = JSON.parse(localStorage.getItem("t5_history"));
+        history.unshift({
+            date: new Date().toLocaleString("fr-FR"),
+            km: km
+        });
+        localStorage.setItem("t5_history", JSON.stringify(history));
 
-    const history = JSON.parse(localStorage.getItem("t5_history"));
-    history.unshift({
-        date: new Date().toLocaleString("fr-FR"),
-        km: newKm
+        input.value = "";
+        updateDisplay();
     });
 
-    localStorage.setItem("t5_history", JSON.stringify(history));
-
-    currentKmInput.value = "";
-    refreshDashboard();
+    updateDisplay();
 });
 
-function refreshDashboard() {
+function updateDisplay() {
     const vehicleKm = parseInt(localStorage.getItem("t5_vehicle_km"), 10);
     const engineKm = Math.max(0, vehicleKm - ENGINE_REPLACEMENT_KM);
 
-    vehicleKmElement.textContent = formatKm(vehicleKm);
-    engineKmElement.textContent = formatKm(engineKm);
+    document.getElementById("vehicleKm").textContent = formatKm(vehicleKm);
+    document.getElementById("engineKm").textContent = formatKm(engineKm);
 
-    vehicleProgress.style.width = Math.min((vehicleKm / VEHICLE_GOAL_KM) * 100, 100) + "%";
-    engineProgress.style.width = Math.min((engineKm / ENGINE_GOAL_KM) * 100, 100) + "%";
+    document.getElementById("vehicleProgress").style.width =
+        Math.min((vehicleKm / VEHICLE_GOAL_KM) * 100, 100) + "%";
 
-    vehicleProgressText.textContent = `${formatKm(vehicleKm)} / ${formatKm(VEHICLE_GOAL_KM)}`;
-    engineProgressText.textContent = `${formatKm(engineKm)} / ${formatKm(ENGINE_GOAL_KM)}`;
+    document.getElementById("engineProgress").style.width =
+        Math.min((engineKm / ENGINE_GOAL_KM) * 100, 100) + "%";
 
-    updateHistory();
-}
+    document.getElementById("vehicleProgressText").textContent =
+        `${formatKm(vehicleKm)} / ${formatKm(VEHICLE_GOAL_KM)}`;
 
-function updateHistory() {
+    document.getElementById("engineProgressText").textContent =
+        `${formatKm(engineKm)} / ${formatKm(ENGINE_GOAL_KM)}`;
+
     const history = JSON.parse(localStorage.getItem("t5_history"));
 
-    if (!history.length) {
+    const lastUpdate = document.getElementById("lastUpdate");
+    const historyList = document.getElementById("historyList");
+
+    if (history.length === 0) {
+        lastUpdate.textContent = "Dernière mise à jour : jamais";
         historyList.innerHTML = "<p>Aucun historique enregistré.</p>";
-        lastUpdateElement.textContent = "Dernière mise à jour : jamais";
         return;
     }
 
-    lastUpdateElement.textContent = "Dernière mise à jour : " + history[0].date;
+    lastUpdate.textContent = "Dernière mise à jour : " + history[0].date;
 
     historyList.innerHTML = history.map(item => `
         <div class="history-item">
