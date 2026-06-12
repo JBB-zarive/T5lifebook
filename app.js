@@ -1,12 +1,12 @@
 // =======================================
-// T5 LifeBook - app.js V2.2 finale
-// Données initiales + entretiens + Google Sheets
+// T5 LifeBook - app.js V2.3 Cloud
+// Google Sheets : écriture + restauration
+// Protection anti-effacement localStorage
 // =======================================
 
 const ENGINE_REPLACEMENT_KM = 170060;
 const VEHICLE_GOAL_KM = 400000;
 const ENGINE_REPLACEMENT_DATE_FR = "19/06/2026";
-const DATA_VERSION = "2.2-final";
 
 const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4OrwPxOdujpoAYIwCRGURSy067ljj2Q3egID6NhC-5_lKlf0-00Exn9ttZA/exec";
 
@@ -22,7 +22,7 @@ const MAINTENANCE_TYPES = [
     { name: "Distribution", interval: 180000 },
     { name: "Embrayage / volant moteur", interval: null },
     { name: "Remplacement turbos", interval: null },
-    { name: "Train avant / géométrie", interval: null }
+    { name: "Train avant / géométrie", interval: null },
     { name: "Autre", interval: null }
 ];
 
@@ -129,31 +129,42 @@ const INITIAL_MAINTENANCES = [
     }
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
-    initStorage();
+document.addEventListener("DOMContentLoaded", async () => {
+    initStorageSafely();
     initMaintenanceSelect();
     bindEvents();
     loadCloudConfig();
+
+    if (isLocalDataEmpty()) {
+        await autoRestoreFromCloudIfPossible();
+    }
+
     updateDashboard();
 });
 
-function initStorage() {
-    const installedVersion = localStorage.getItem("t5_data_version");
-
-    if (installedVersion !== DATA_VERSION) {
-        localStorage.setItem("t5_vehicle_km", String(170060));
-        localStorage.setItem("t5_km_history", JSON.stringify(INITIAL_KM_HISTORY));
-        localStorage.setItem("t5_maintenances", JSON.stringify(INITIAL_MAINTENANCES));
-        localStorage.setItem("t5_data_version", DATA_VERSION);
-
-        if (!localStorage.getItem("t5_cloud_url")) {
-            localStorage.setItem("t5_cloud_url", DEFAULT_CLOUD_URL);
-        }
-    }
-
+function initStorageSafely() {
     if (!localStorage.getItem("t5_cloud_url")) {
         localStorage.setItem("t5_cloud_url", DEFAULT_CLOUD_URL);
     }
+
+    if (!localStorage.getItem("t5_vehicle_km")) {
+        localStorage.setItem("t5_vehicle_km", String(170060));
+    }
+
+    if (!localStorage.getItem("t5_km_history")) {
+        localStorage.setItem("t5_km_history", JSON.stringify(INITIAL_KM_HISTORY));
+    }
+
+    if (!localStorage.getItem("t5_maintenances")) {
+        localStorage.setItem("t5_maintenances", JSON.stringify(INITIAL_MAINTENANCES));
+    }
+}
+
+function isLocalDataEmpty() {
+    const kmHistory = getKmHistory();
+    const maintenances = getMaintenances();
+
+    return kmHistory.length === 0 && maintenances.length === 0;
 }
 
 function bindEvents() {
@@ -164,6 +175,7 @@ function bindEvents() {
     document.getElementById("saveCloudBtn").addEventListener("click", saveCloudConfig);
     document.getElementById("testCloudBtn").addEventListener("click", testCloud);
     document.getElementById("syncAllBtn").addEventListener("click", syncAll);
+    document.getElementById("restoreCloudBtn").addEventListener("click", restoreFromCloudWithConfirmation);
 }
 
 function initMaintenanceSelect() {
@@ -426,6 +438,120 @@ function syncAll() {
     updateCloudStatus("Synchronisation envoyée.");
 }
 
+async function autoRestoreFromCloudIfPossible() {
+    const url = getCloudUrl();
+    if (!url) return;
+
+    try {
+        updateCloudStatus("Restauration automatique en cours...");
+        const cloudData = await fetchCloudData();
+
+        if (cloudData && (cloudData.kilometrages.length || cloudData.entretiens.length)) {
+            applyCloudData(cloudData);
+            updateCloudStatus("Données restaurées automatiquement depuis Google Sheets.");
+        }
+    } catch (error) {
+        updateCloudStatus("Restauration automatique impossible.");
+    }
+}
+
+async function restoreFromCloudWithConfirmation() {
+    const url = getCloudUrl();
+
+    if (!url) {
+        alert("Merci de renseigner l'URL Google Apps Script.");
+        return;
+    }
+
+    const ok = confirm(
+        "Restaurer depuis Google Sheets ?\n\n" +
+        "Les données locales actuelles seront remplacées par les données cloud."
+    );
+
+    if (!ok) return;
+
+    try {
+        updateCloudStatus("Restauration depuis Google Sheets...");
+        const cloudData = await fetchCloudData();
+        applyCloudData(cloudData);
+        updateDashboard();
+        updateCloudStatus("Restauration terminée.");
+    } catch (error) {
+        console.error(error);
+        updateCloudStatus("Erreur pendant la restauration.");
+        alert("Impossible de restaurer depuis Google Sheets.");
+    }
+}
+
+async function fetchCloudData() {
+    const response = await fetch(getCloudUrl(), {
+        method: "GET",
+        cache: "no-store"
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+        throw new Error("Réponse Google Sheets invalide.");
+    }
+
+    return {
+        kilometrages: data.kilometrages || [],
+        entretiens: data.entretiens || []
+    };
+}
+
+function applyCloudData(cloudData) {
+    const kmHistory = (cloudData.kilometrages || [])
+        .map((row, index) => {
+            const date = String(row[0] || "");
+            const km = parseInt(row[1], 10);
+            const engineKm = parseInt(row[2], 10);
+
+            if (!km) return null;
+
+            return {
+                id: "cloud-km-" + index + "-" + km,
+                date: date || "Date inconnue",
+                km: km,
+                engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                createdAt: parseDateForSort(date).toISOString()
+            };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.km - a.km);
+
+    const maintenances = (cloudData.entretiens || [])
+        .map((row, index) => {
+            const date = normalizeCloudDate(row[0]);
+            const km = parseInt(row[1], 10);
+            const engineKm = parseInt(row[2], 10);
+            const type = String(row[3] || "Autre");
+            const notes = String(row[4] || "");
+
+            if (!km) return null;
+
+            return {
+                id: "cloud-maintenance-" + index + "-" + km,
+                type: type || "Autre",
+                date: date,
+                km: km,
+                engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                notes: notes,
+                createdAt: date + "T12:00:00"
+            };
+        })
+        .filter(Boolean);
+
+    const latestKm = kmHistory.length
+        ? Math.max(...kmHistory.map(item => item.km))
+        : 170060;
+
+    localStorage.setItem("t5_vehicle_km", String(latestKm));
+    localStorage.setItem("t5_km_history", JSON.stringify(kmHistory));
+    localStorage.setItem("t5_maintenances", JSON.stringify(maintenances));
+}
+
 function syncRow(table, values) {
     const url = getCloudUrl();
     if (!url) return;
@@ -490,17 +616,48 @@ function formatDateFr(dateString) {
     return date.toLocaleDateString("fr-FR");
 }
 
+function normalizeCloudDate(value) {
+    if (!value) return new Date().toISOString().slice(0, 10);
+
+    if (value instanceof Date) {
+        return value.toISOString().slice(0, 10);
+    }
+
+    const text = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+        return text;
+    }
+
+    if (/^\d{2}\/\d{2}\/\d{4}/.test(text)) {
+        const parts = text.split(" ")[0].split("/");
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    const parsed = new Date(text);
+    if (!isNaN(parsed.getTime())) {
+        return parsed.toISOString().slice(0, 10);
+    }
+
+    return new Date().toISOString().slice(0, 10);
+}
+
 function parseDateForSort(dateString) {
     if (!dateString) return new Date(0);
 
-    const firstPart = dateString.split(" ")[0];
+    const firstPart = String(dateString).split(" ")[0];
     const parts = firstPart.split("/");
 
     if (parts.length === 3) {
         return new Date(`${parts[2]}-${parts[1]}-${parts[0]}T00:00:00`);
     }
 
-    return new Date(dateString);
+    const parsed = new Date(dateString);
+    if (!isNaN(parsed.getTime())) {
+        return parsed;
+    }
+
+    return new Date(0);
 }
 
 function makeId() {
