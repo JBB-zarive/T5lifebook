@@ -12,14 +12,14 @@ const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4Or
 
 const MAINTENANCE_TYPES = [
     { name: "Vidange moteur + filtre", interval: 10000 },
-    { name: "Vidange DSG", interval: 80000 },
-    { name: "Vidange Haldex", interval: 80000 },
     { name: "Filtre gasoil", interval: 30000 },
     { name: "Filtre à air", interval: 30000 },
     { name: "Liquide de frein", interval: null },
     { name: "Freins", interval: null },
     { name: "Pneus", interval: null },
-    { name: "Distribution", interval: 180000 },
+    { name: "Distribution complète", interval: 180000 },
+    { name: "Vidange DSG", interval: 80000 },
+    { name: "Vidange Haldex", interval: 80000 },
     { name: "Embrayage / volant moteur", interval: null },
     { name: "Remplacement turbos", interval: null },
     { name: "Train avant / géométrie", interval: null },
