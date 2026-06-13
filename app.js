@@ -34,7 +34,7 @@ const MAINTENANCE_TYPES = [
     { name: "Embrayage / volant moteur",group: "info", interval: null,   intervalYears: null },
     { name: "Remplacement turbos",      group: "info", interval: null,   intervalYears: null },
     { name: "Train avant / géométrie",  group: "info", interval: null,   intervalYears: null },
-    { name: "Autre",                    group: "info", interval: null,   intervalYears: null }
+    { name: "Suspension",                    group: "info", interval: null,   intervalYears: null }
 ];
 
 const INITIAL_KM_HISTORY = [
@@ -51,7 +51,7 @@ const INITIAL_MAINTENANCES = [
     { id: "mnt-2025-11-14-vidange",      type: "Vidange moteur + filtre",  date: "2025-11-14", km: 166800, engineKm: 0, notes: "Vidange et filtre à huile réalisés lors du remplacement des turbos.", createdAt: "2025-11-14T12:00:01" },
     { id: "mnt-2025-11-14-filtre-air",   type: "Filtre à air",             date: "2025-11-14", km: 166800, engineKm: 0, notes: "Filtre à air remplacé lors du remplacement des turbos.", createdAt: "2025-11-14T12:00:02" },
     { id: "mnt-2018-06-06-dsg",          type: "Vidange DSG",              date: "2018-06-06", km: 99850,  engineKm: 0, notes: "Remplacement complet de la boîte DSG. Boîte de vitesses remplacée, câble de sélection réglé, boîte déposée/reposée, GFS/fonction guidée et parcours d'essai.", createdAt: "2018-06-06T12:00:00" },
-    { id: "mnt-2018-06-06-haldex",       type: "Vidange Haldex",           date: "2018-06-06", km: 99850,  engineKm: 0, notes: "Supposée réalisée lors du remplacement complet de la boîte DSG. À confirmer si facture détaillée disponible.", createdAt: "2018-06-06T12:00:01" }
+    { id: "mnt-2018-06-06-haldex",       type: "Vidange Haldex",           date: "2018-06-06", km: 99850,  engineKm: 0, notes: "Réalisée lors du remplacement complet de la boîte DSG.", createdAt: "2018-06-06T12:00:01" }
 ];
 
 // -------------------------------------------------------------------
