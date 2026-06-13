@@ -8,7 +8,7 @@ const VEHICLE_GOAL_KM          = 400000;
 const ENGINE_REPLACEMENT_DATE_FR = "19/06/2026";
 const ENGINE_REPLACEMENT_ISO   = "2026-06-19"; // date ISO du moteur neuf
 
-const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbzbV7LaByU4OrwPxOdujpoAYIwCRGURSy067ljj2Q3egID6NhC-5_lKlf0-00Exn9ttZA/exec";
+const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbyMlt67VhYuU1IjRJaWGdImVQYBPz2FXyXz_cXlJ03NHj6YVNkFdkQzdNBcEFl4kMUzvw/exec";
 
 // -------------------------------------------------------------------
 // Types d'entretien — 4 groupes :
