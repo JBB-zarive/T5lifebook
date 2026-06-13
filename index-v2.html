@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T5 LifeBook</title>
+
+    <link rel="stylesheet" href="styles.css?v=23">
+
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="T5 LifeBook">
+</head>
+
+<body>
+<header class="header">
+    <h1>🚐 T5 LifeBook</h1>
+    <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
+</header>
+
+<main class="container">
+
+    <section class="card">
+        <h2>📍 Saisie kilométrage</h2>
+
+        <div class="input-group">
+            <input type="number" id="currentKm" placeholder="Ex : 170250">
+            <button id="saveKmBtn">Enregistrer</button>
+        </div>
+
+        <p id="lastUpdate">Dernière mise à jour : jamais</p>
+    </section>
+
+    <section class="card">
+        <h2>🚐 Véhicule</h2>
+
+        <div class="stat">
+            <span>VIN</span>
+            <strong>WV1ZZZ7HZEH003985</strong>
+        </div>
+
+        <div class="stat">
+            <span>Immatriculation</span>
+            <strong>CW-374-CL</strong>
+        </div>
+
+        <div class="stat">
+            <span>Modèle</span>
+            <strong>T5.1 - 4Motion</strong>
+        </div>
+
+        <div class="stat">
+            <span>Km châssis</span>
+            <strong id="vehicleKm">170 060 km</strong>
+        </div>
+
+        <div class="stat">
+            <span>Km moteur</span>
+            <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>🎯 Objectif 400 000 km</h2>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="vehicleProgress"></div>
+        </div>
+
+        <p id="vehicleProgressText">170 060 / 400 000 km</p>
+    </section>
+
+    <section class="card">
+        <div class="card-title-row">
+            <h2>🛠 Entretien</h2>
+            <button class="mini-btn" id="openMaintenanceBtn">+ Ajouter</button>
+        </div>
+
+        <div id="maintenanceList"></div>
+    </section>
+
+    <section class="card hidden" id="maintenanceFormCard">
+        <h2>➕ Ajouter un entretien</h2>
+
+        <label for="maintenanceType">Type d'entretien</label>
+        <select id="maintenanceType"></select>
+
+        <label for="maintenanceDate">Date</label>
+        <input type="date" id="maintenanceDate">
+
+        <label for="maintenanceKm">Kilométrage</label>
+        <input type="number" id="maintenanceKm" placeholder="Ex : 170060">
+
+        <label for="maintenanceNotes">Notes</label>
+        <textarea id="maintenanceNotes" placeholder="Ex : huile 5W30 VW 507.00, pièces remplacées..."></textarea>
+
+        <div class="button-row">
+            <button id="saveMaintenanceBtn">Enregistrer</button>
+            <button class="secondary-btn" id="cancelMaintenanceBtn">Annuler</button>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>☁️ Passerelle Google Sheets</h2>
+
+        <div class="input-group">
+            <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
+            <button id="saveCloudBtn">Enregistrer</button>
+        </div>
+
+        <div class="button-row">
+            <button class="secondary-btn" id="testCloudBtn">Tester</button>
+            <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
+            <button class="secondary-btn" id="restoreCloudBtn">Restaurer</button>
+        </div>
+
+        <p id="cloudStatus">Cloud : non configuré</p>
+    </section>
+
+    <section class="card">
+        <h2>📚 Historique</h2>
+        <div id="historyList">
+            <p>Aucun historique enregistré.</p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    T5 LifeBook © 2026
+</footer>
+
+<script src="app.js?v=23"></script>
+</body>
+</html>
