@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>T5 LifeBook</title>
-
-    <link rel="stylesheet" href="styles.css?v=23">
-
+    <link rel="stylesheet" href="styles.css?v=30">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,74 +12,58 @@
 </head>
 
 <body>
-<header class="header">
-    <h1>🚐 T5 LifeBook</h1>
-    <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
-</header>
 
-<main class="container">
-
-    <section class="card">
-        <h2>📍 Saisie kilométrage</h2>
-
-        <div class="input-group">
-            <input type="number" id="currentKm" placeholder="Ex : 170250">
+<!-- ===== MODAL KILOMÉTRAGE ===== -->
+<div class="modal-overlay hidden" id="kmModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>📍 Kilométrage</h2>
+            <button class="modal-close" id="closeKmModal">✕</button>
+        </div>
+        <label for="currentKm">Kilométrage actuel</label>
+        <input type="number" id="currentKm" placeholder="Ex : 170250">
+        <p id="lastUpdate" class="modal-hint">Dernière mise à jour : jamais</p>
+        <div class="button-row">
             <button id="saveKmBtn">Enregistrer</button>
+            <button class="secondary-btn" id="cancelKmModal">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL CARBURANT ===== -->
+<div class="modal-overlay hidden" id="fuelModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>⛽ Plein de carburant</h2>
+            <button class="modal-close" id="closeFuelModal">✕</button>
         </div>
 
-        <p id="lastUpdate">Dernière mise à jour : jamais</p>
-    </section>
+        <label for="fuelDate">Date</label>
+        <input type="date" id="fuelDate">
 
-    <section class="card">
-        <h2>🚐 Véhicule</h2>
+        <label for="fuelKm">Kilométrage actuel</label>
+        <input type="number" id="fuelKm" placeholder="Ex : 170500">
 
-        <div class="stat">
-            <span>VIN</span>
-            <strong>WV1ZZZ7HZEH003985</strong>
+        <label for="fuelLiters">Litres mis</label>
+        <input type="number" id="fuelLiters" placeholder="Ex : 65.00" step="0.01">
+
+        <label for="fuelPrice">Prix total (€)</label>
+        <input type="number" id="fuelPrice" placeholder="Ex : 102.50" step="0.01">
+
+        <div class="button-row" style="margin-top:16px">
+            <button id="saveFuelBtn">Enregistrer</button>
+            <button class="secondary-btn" id="cancelFuelModal">Annuler</button>
         </div>
+    </div>
+</div>
 
-        <div class="stat">
-            <span>Immatriculation</span>
-            <strong>CW-374-CL</strong>
+<!-- ===== MODAL ENTRETIEN ===== -->
+<div class="modal-overlay hidden" id="maintenanceModalOverlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>➕ Ajouter un entretien</h2>
+            <button class="modal-close" id="closeMaintenanceModal">✕</button>
         </div>
-
-        <div class="stat">
-            <span>Modèle</span>
-            <strong>T5.1 - 4Motion</strong>
-        </div>
-
-        <div class="stat">
-            <span>Km châssis</span>
-            <strong id="vehicleKm">170 060 km</strong>
-        </div>
-
-        <div class="stat">
-            <span>Km moteur</span>
-            <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
-        </div>
-    </section>
-
-    <section class="card">
-        <h2>🎯 Objectif 400 000 km</h2>
-
-        <div class="progress-container">
-            <div class="progress-bar" id="vehicleProgress"></div>
-        </div>
-
-        <p id="vehicleProgressText">170 060 / 400 000 km</p>
-    </section>
-
-    <section class="card">
-        <div class="card-title-row">
-            <h2>🛠 Entretien</h2>
-            <button class="mini-btn" id="openMaintenanceBtn">+ Ajouter</button>
-        </div>
-
-        <div id="maintenanceList"></div>
-    </section>
-
-    <section class="card hidden" id="maintenanceFormCard">
-        <h2>➕ Ajouter un entretien</h2>
 
         <label for="maintenanceType">Type d'entretien</label>
         <select id="maintenanceType"></select>
@@ -95,26 +77,84 @@
         <label for="maintenanceNotes">Notes</label>
         <textarea id="maintenanceNotes" placeholder="Ex : huile 5W30 VW 507.00, pièces remplacées..."></textarea>
 
-        <div class="button-row">
+        <div class="button-row" style="margin-top:16px">
             <button id="saveMaintenanceBtn">Enregistrer</button>
-            <button class="secondary-btn" id="cancelMaintenanceBtn">Annuler</button>
+            <button class="secondary-btn" id="cancelMaintenanceModal">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<header class="header">
+    <h1>🚐 T5 LifeBook</h1>
+    <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
+</header>
+
+<!-- Barre d'actions rapides -->
+<div class="quick-actions">
+    <button class="quick-btn" id="openKmModal">📍 Km</button>
+    <button class="quick-btn fuel-btn" id="openFuelModal">⛽ Plein</button>
+    <button class="quick-btn" id="openMaintenanceBtn">🛠 Entretien</button>
+</div>
+
+<main class="container">
+
+    <section class="card">
+        <h2>🚐 Véhicule</h2>
+        <div class="stat">
+            <span>VIN</span>
+            <strong>WV1ZZZ7HZEH003985</strong>
+        </div>
+        <div class="stat">
+            <span>Immatriculation</span>
+            <strong>CW-374-CL</strong>
+        </div>
+        <div class="stat">
+            <span>Modèle</span>
+            <strong>T5.1 - 4Motion</strong>
+        </div>
+        <div class="stat">
+            <span>Km châssis</span>
+            <strong id="vehicleKm">170 060 km</strong>
+        </div>
+        <div class="stat">
+            <span>Km moteur</span>
+            <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
         </div>
     </section>
 
     <section class="card">
-        <h2>☁️ Passerelle Google Sheets</h2>
+        <h2>🎯 Objectif 400 000 km</h2>
+        <div class="progress-container">
+            <div class="progress-bar" id="vehicleProgress"></div>
+        </div>
+        <p id="vehicleProgressText">170 060 / 400 000 km</p>
+    </section>
 
+    <section class="card">
+        <div class="card-title-row">
+            <h2>🛠 Entretien</h2>
+            <button class="mini-btn" id="openMaintenanceBtnCard">+ Ajouter</button>
+        </div>
+        <div id="maintenanceList"></div>
+    </section>
+
+    <section class="card" id="fuelHistoryCard">
+        <h2>⛽ Historique carburant</h2>
+        <div id="fuelStats" class="fuel-stats hidden"></div>
+        <div id="fuelList"><p>Aucun plein enregistré.</p></div>
+    </section>
+
+    <section class="card">
+        <h2>☁️ Passerelle Google Sheets</h2>
         <div class="input-group">
             <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
             <button id="saveCloudBtn">Enregistrer</button>
         </div>
-
         <div class="button-row">
             <button class="secondary-btn" id="testCloudBtn">Tester</button>
             <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
             <button class="secondary-btn" id="restoreCloudBtn">Restaurer</button>
         </div>
-
         <p id="cloudStatus">Cloud : non configuré</p>
     </section>
 
@@ -127,10 +167,8 @@
 
 </main>
 
-<footer class="footer">
-    T5 LifeBook © 2026
-</footer>
+<footer class="footer">T5 LifeBook © 2026</footer>
 
-<script src="app.js?v=23"></script>
+<script src="app.js?v=30"></script>
 </body>
 </html>

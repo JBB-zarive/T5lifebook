@@ -1,5 +1,5 @@
 /* ===================================
-   T5 LifeBook - styles.css V2.3
+   T5 LifeBook - styles.css V3.0
    Dark Mode iPhone friendly
 =================================== */
 
@@ -12,6 +12,7 @@
     --green: #16a34a;
     --orange: #f59e0b;
     --red: #dc2626;
+    --fuel: #f97316;
     --border: #334155;
     --radius: 16px;
     --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -30,8 +31,9 @@ body {
     min-height: 100vh;
 }
 
+/* ===== HEADER ===== */
 .header {
-    padding: 18px 12px;
+    padding: 18px 12px 10px;
     text-align: center;
 }
 
@@ -48,6 +50,110 @@ body {
     line-height: 1.25;
 }
 
+/* ===== QUICK ACTIONS BAR ===== */
+.quick-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding: 12px 16px 16px;
+}
+
+.quick-btn {
+    flex: 1;
+    max-width: 160px;
+    padding: 13px 10px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    background: var(--blue);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s, opacity 0.15s;
+}
+
+.quick-btn.fuel-btn {
+    background: var(--fuel);
+}
+
+.quick-btn:active {
+    transform: scale(0.96);
+    opacity: 0.85;
+}
+
+/* ===== MODALS ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    animation: fadeIn 0.18s ease;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.modal {
+    background: #1e293b;
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px 36px;
+    width: 100%;
+    max-width: 560px;
+    animation: slideUp 0.22s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(60px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.modal-header h2 {
+    font-size: 1rem;
+    margin: 0;
+}
+
+.modal-close {
+    background: #334155;
+    border: none;
+    color: var(--text-secondary);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: unset;
+}
+
+.modal-hint {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    margin: 6px 0 4px;
+}
+
+/* ===== CONTAINER ===== */
 .container {
     width: 94%;
     max-width: 1100px;
@@ -57,6 +163,7 @@ body {
     padding-bottom: 50px;
 }
 
+/* ===== CARD ===== */
 .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -77,12 +184,14 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    margin-bottom: 13px;
 }
 
 .card-title-row h2 {
     margin-bottom: 0;
 }
 
+/* ===== INPUTS ===== */
 .input-group,
 .button-row {
     display: flex;
@@ -144,8 +253,10 @@ button:active {
     width: auto;
     padding: 8px 12px;
     font-size: 0.75rem;
+    margin-bottom: 0;
 }
 
+/* ===== STATS ===== */
 .stat {
     display: flex;
     justify-content: space-between;
@@ -171,6 +282,7 @@ button:active {
     overflow-wrap: anywhere;
 }
 
+/* ===== PROGRESS ===== */
 .progress-container,
 .maintenance-progress {
     width: 100%;
@@ -179,6 +291,11 @@ button:active {
     border-radius: 999px;
     overflow: hidden;
     margin-bottom: 10px;
+}
+
+.maintenance-progress {
+    height: 16px;
+    margin-bottom: 4px;
 }
 
 .progress-bar,
@@ -193,21 +310,27 @@ button:active {
     background: linear-gradient(90deg, #2563eb, #60a5fa);
 }
 
-.maintenance-bar.ok {
-    background: linear-gradient(90deg, #16a34a, #4ade80);
-}
-
-.maintenance-bar.warning {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
-}
-
-.maintenance-bar.danger {
-    background: linear-gradient(90deg, #dc2626, #f87171);
-}
+.maintenance-bar.ok     { background: linear-gradient(90deg, #16a34a, #4ade80); }
+.maintenance-bar.warning{ background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.maintenance-bar.danger { background: linear-gradient(90deg, #dc2626, #f87171); }
 
 #vehicleProgressText {
     color: var(--text-secondary);
     font-size: 0.88rem;
+}
+
+/* ===== MAINTENANCE ITEMS ===== */
+.maintenance-group-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin: 14px 0 8px;
+}
+
+.maintenance-group-title:first-child {
+    margin-top: 0;
 }
 
 .maintenance-item {
@@ -223,13 +346,14 @@ button:active {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     font-size: 0.86rem;
 }
 
 .maintenance-header span {
     color: var(--text-secondary);
     text-align: right;
+    white-space: nowrap;
 }
 
 .maintenance-item small {
@@ -237,20 +361,120 @@ button:active {
     font-size: 0.76rem;
 }
 
+.dual-gauge {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.dual-gauge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dual-gauge-label {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    width: 28px;
+    flex-shrink: 0;
+}
+
+.dual-gauge-row .maintenance-progress {
+    flex: 1;
+    margin-bottom: 0;
+    height: 14px;
+}
+
 .no-interval {
     background: rgba(15, 23, 42, 0.35);
     border-radius: 12px;
     padding: 12px;
-    margin: 8px 0;
+    margin: 6px 0 0;
+    border-bottom: none !important;
+}
+
+/* ===== FUEL HISTORY ===== */
+.fuel-stats {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.fuel-stat-box {
+    flex: 1;
+    min-width: 90px;
+    background: #0b1220;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: center;
+}
+
+.fuel-stat-box .value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--fuel);
+}
+
+.fuel-stat-box .label {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+.fuel-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+}
+
+.fuel-item:last-child {
     border-bottom: none;
 }
 
+.fuel-item-left strong {
+    font-size: 0.9rem;
+    display: block;
+}
+
+.fuel-item-left small {
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+}
+
+.fuel-item-right {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.fuel-item-right .price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--fuel);
+}
+
+.fuel-item-right small {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    display: block;
+}
+
+/* ===== HISTORY ===== */
 .history-item {
     background: #0b1220;
     padding: 12px;
     border-radius: 12px;
     margin-bottom: 10px;
     border-left: 4px solid var(--blue);
+}
+
+.history-item.fuel-history {
+    border-left-color: var(--fuel);
 }
 
 .history-top {
@@ -265,13 +489,14 @@ button:active {
     font-size: 0.76rem;
 }
 
-#lastUpdate,
+/* ===== CLOUD ===== */
 #cloudStatus {
     margin-top: 12px;
     color: var(--text-secondary);
     font-size: 0.78rem;
 }
 
+/* ===== FOOTER ===== */
 .footer {
     text-align: center;
     color: var(--text-secondary);
@@ -280,9 +505,10 @@ button:active {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
+/* ===== RESPONSIVE ===== */
 @media (max-width: 700px) {
     .input-group,
     .button-row {
@@ -293,7 +519,9 @@ button:active {
         width: 100%;
     }
 
-    .mini-btn {
+    .quick-btn,
+    .mini-btn,
+    .modal-close {
         width: auto;
     }
 
