@@ -395,54 +395,64 @@ button:active {
     border-bottom: none !important;
 }
 
-/* ===== FUEL HISTORY ===== */
+/* ===== FUEL HISTORY V3.1 ===== */
+
 .fuel-stats {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
 }
 
 .fuel-stat-box {
-    flex: 1;
-    min-width: 90px;
     background: #0b1220;
-    border-radius: 12px;
-    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 10px;
     text-align: center;
 }
 
 .fuel-stat-box .value {
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.15;
+    font-weight: 800;
     color: var(--fuel);
 }
 
 .fuel-stat-box .label {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
-    margin-top: 2px;
+    margin-top: 5px;
+}
+
+.fuel-stat-box.wide {
+    grid-column: 1 / -1;
 }
 
 .fuel-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 11px 0;
+    display: block;
+    padding: 14px 0;
     border-bottom: 1px solid var(--border);
-    gap: 10px;
 }
 
 .fuel-item:last-child {
     border-bottom: none;
 }
 
+.fuel-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
 .fuel-item-left strong {
-    font-size: 0.9rem;
+    font-size: 1rem;
     display: block;
 }
 
-.fuel-item-left small {
+.fuel-item-left small,
+.fuel-item-right small {
     color: var(--text-secondary);
     font-size: 0.76rem;
 }
@@ -453,15 +463,44 @@ button:active {
 }
 
 .fuel-item-right .price {
-    font-size: 0.95rem;
-    font-weight: 700;
+    font-size: 1rem;
+    font-weight: 800;
     color: var(--fuel);
 }
 
-.fuel-item-right small {
+.fuel-conso-row {
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: rgba(249, 115, 22, 0.10);
+    border: 1px solid rgba(249, 115, 22, 0.25);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.fuel-conso-label {
+    font-weight: 800;
+    color: var(--fuel);
+    font-size: 0.9rem;
+}
+
+.fuel-conso-dist {
     color: var(--text-secondary);
-    font-size: 0.75rem;
-    display: block;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+.fuel-conso-warning {
+    margin-top: 10px;
+    padding: 9px 10px;
+    border-radius: 12px;
+    background: rgba(220, 38, 38, 0.10);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    color: #fca5a5;
+    font-size: 0.78rem;
 }
 
 /* ===== HISTORY ===== */
