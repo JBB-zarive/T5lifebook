@@ -325,7 +325,7 @@ function updateMaintenanceList() {
                 <div class="maintenance-item">
                     <div class="maintenance-header">
                         <strong>${type.name}</strong>
-                        <span>${formatKm(kmSince)} / ${formatKm(type.interval)}</span>
+                        <span><strong>${formatKm(kmSince)}</strong> / ${formatKm(type.interval)}</span>
                     </div>
                     <div class="maintenance-progress">
                         <div class="maintenance-bar ${cls}" style="width:${ratio}%"></div>
@@ -356,7 +356,7 @@ function updateMaintenanceList() {
                 <div class="maintenance-item">
                     <div class="maintenance-header">
                         <strong>${type.name}</strong>
-                        <span>${formatKm(kmSince)} / ${formatKm(type.interval)}</span>
+                        <span><strong>${formatKm(kmSince)}</strong> / ${formatKm(type.interval)}</span>
                     </div>
                     <div class="dual-gauge">
                         <div class="dual-gauge-row">
