@@ -427,53 +427,80 @@ function updateMaintenanceList() {
 }
 
 // -------------------------------------------------------------------
-// FUEL HISTORY
+// FUEL HISTORY — stats enrichies + consommation aux 100 km
 // -------------------------------------------------------------------
 function updateFuelHistory() {
-    const fuelHistory = getFuelHistory();
-    const container   = document.getElementById("fuelList");
-    const statsEl     = document.getElementById("fuelStats");
+    const raw       = getFuelHistory();
+    const container = document.getElementById("fuelList");
+    const statsEl   = document.getElementById("fuelStats");
 
-    if (!fuelHistory.length) {
+    if (!raw.length) {
         container.innerHTML = "<p>Aucun plein enregistré.</p>";
         statsEl.classList.add("hidden");
         return;
     }
 
+    // Trier du plus récent au plus ancien (km décroissant)
+    const fuelHistory = [...raw].sort((a, b) => Number(b.km) - Number(a.km));
+
+    // Calcul consommation entre pleins consécutifs
+    // fuelHistory[0] = plein le plus récent (km le plus haut)
+    // conso du plein i = litres[i] / (km[i] - km[i+1]) * 100
+    const withConso = fuelHistory.map((f, i) => {
+        const next = fuelHistory[i + 1];
+        if (!next) return { ...f, conso: null, kmDiff: null };
+        const kmDiff = Number(f.km) - Number(next.km);
+        if (kmDiff <= 0) return { ...f, conso: null, kmDiff: null };
+        const conso = (f.liters / kmDiff) * 100;
+        return { ...f, conso: Math.round(conso * 10) / 10, kmDiff };
+    });
+
     // Stats globales
     const totalL     = fuelHistory.reduce((s, f) => s + f.liters, 0);
-    const totalPrice = fuelHistory.reduce((s, f) => s + f.price,  0);
+    const totalPrice = fuelHistory.reduce((s, f) => s + f.price, 0);
     const avgPriceL  = totalPrice / totalL;
 
-    statsEl.classList.remove("hidden");
-    statsEl.innerHTML = `
-        <div class="fuel-stat-box">
-            <div class="value">${totalL.toFixed(0)} L</div>
-            <div class="label">Total consommé</div>
-        </div>
-        <div class="fuel-stat-box">
-            <div class="value">${totalPrice.toFixed(0)} €</div>
-            <div class="label">Total dépensé</div>
-        </div>
-        <div class="fuel-stat-box">
-            <div class="value">${avgPriceL.toFixed(3)} €/L</div>
-            <div class="label">Prix moyen</div>
-        </div>
-    `;
+    const consoValues = withConso.filter(f => f.conso !== null).map(f => f.conso);
+    const avgConso  = consoValues.length ? consoValues.reduce((s, c) => s + c, 0) / consoValues.length : null;
+    const bestConso = consoValues.length ? Math.min(...consoValues) : null;
+    const worstConso= consoValues.length ? Math.max(...consoValues) : null;
 
-    container.innerHTML = fuelHistory.slice(0, 20).map(f => {
+    const kmMin   = Math.min(...fuelHistory.map(f => Number(f.km)));
+    const kmMax   = Math.max(...fuelHistory.map(f => Number(f.km)));
+    const kmTotal = kmMax - kmMin;
+    const coutKm  = kmTotal > 0 ? totalPrice / kmTotal : null;
+
+    statsEl.classList.remove("hidden");
+    statsEl.innerHTML =
+        '<div class="fuel-stats-grid">' +
+        '<div class="fuel-stat-box"><div class="value">' + totalL.toFixed(0) + ' L</div><div class="label">Total consommé</div></div>' +
+        '<div class="fuel-stat-box"><div class="value">' + totalPrice.toFixed(0) + ' €</div><div class="label">Total dépensé</div></div>' +
+        '<div class="fuel-stat-box"><div class="value">' + avgPriceL.toFixed(3) + ' €/L</div><div class="label">Prix moyen</div></div>' +
+        (avgConso !== null ? '<div class="fuel-stat-box highlight"><div class="value">' + avgConso.toFixed(1) + ' L/100</div><div class="label">Conso moyenne</div></div>' : '') +
+        (bestConso !== null ? '<div class="fuel-stat-box green"><div class="value">' + bestConso.toFixed(1) + ' L/100</div><div class="label">Meilleure conso</div></div>' : '') +
+        (worstConso !== null ? '<div class="fuel-stat-box red"><div class="value">' + worstConso.toFixed(1) + ' L/100</div><div class="label">Pire conso</div></div>' : '') +
+        (coutKm !== null ? '<div class="fuel-stat-box"><div class="value">' + coutKm.toFixed(2) + ' €/km</div><div class="label">Coût au km</div></div>' : '') +
+        '<div class="fuel-stat-box"><div class="value">' + fuelHistory.length + '</div><div class="label">Pleins enregistrés</div></div>' +
+        '</div>';
+
+    container.innerHTML = withConso.map(function(f) {
         const unitPrice = (f.price / f.liters).toFixed(3);
-        return `
-        <div class="fuel-item">
-            <div class="fuel-item-left">
-                <strong>${formatKm(f.km)}</strong>
-                <small>${formatDateFr(f.date)}</small>
-            </div>
-            <div class="fuel-item-right">
-                <div class="price">${f.price.toFixed(2)} €</div>
-                <small>${f.liters.toFixed(2)} L • ${unitPrice} €/L</small>
-            </div>
-        </div>`;
+        var consoBar = "";
+        if (f.conso !== null) {
+            var dist = f.kmDiff ? f.kmDiff.toLocaleString("fr-FR") + " km" : "";
+            consoBar =
+                '<div class="fuel-conso-row">' +
+                '<span class="fuel-conso-label">' + f.conso.toFixed(1) + ' L/100</span>' +
+                '<span class="fuel-conso-dist">' + dist + '</span>' +
+                '</div>';
+        }
+        return '<div class="fuel-item">' +
+            '<div class="fuel-item-top">' +
+            '<div class="fuel-item-left"><strong>' + formatKm(f.km) + '</strong><small>' + formatDateFr(f.date) + '</small></div>' +
+            '<div class="fuel-item-right"><div class="price">' + f.price.toFixed(2) + ' €</div><small>' + f.liters.toFixed(2) + ' L • ' + unitPrice + ' €/L</small></div>' +
+            '</div>' +
+            consoBar +
+            '</div>';
     }).join("");
 }
 
