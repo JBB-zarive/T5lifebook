@@ -707,3 +707,5 @@ function formatNumber(n) {
         .format(n);
 
 }
+const CLOUD_URL =
+"https://script.google.com/macros/s/AKfycbyMlt67VhYuU1IjRJaWGdImVQYBPz2FXyXz_cXlJ03NHj6YVNkFdkQzdNBcEFl4kMUzvw/exec";
