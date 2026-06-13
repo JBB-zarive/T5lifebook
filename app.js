@@ -8,7 +8,7 @@ const VEHICLE_GOAL_KM          = 400000;
 const ENGINE_REPLACEMENT_DATE_FR = "19/06/2026";
 const ENGINE_REPLACEMENT_ISO   = "2026-06-19"; // date ISO du moteur neuf
 
-const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbyMlt67VhYuU1IjRJaWGdImVQYBPz2FXyXz_cXlJ03NHj6YVNkFdkQzdNBcEFl4kMUzvw/exec";
+const DEFAULT_CLOUD_URL = "https://script.google.com/macros/s/AKfycbw235-vKrPihfxfaINSRrFCqV8ksnOHLJsq-uhoZyv-ykwWo44R4BBttEa57SASoA_RDQ/exec";
 
 // -------------------------------------------------------------------
 // Types d'entretien — 4 groupes :
@@ -593,28 +593,40 @@ async function syncAll() {
     if (!getCloudUrl()) { alert("Merci de renseigner l'URL Google Apps Script."); return; }
     updateCloudStatus("⏳ Synchronisation en cours…");
 
-    // Formate les données en objets nommés attendus par replaceSheet()
+    // Format aligné sur Google Sheets V2 :
+    // kilometrages : id | date_saisie | km_chassis | km_moteur | source | note
+    // entretiens   : id | date | km_chassis | km_moteur | type | description | cout | note
+    // carburant    : id | date | km_chassis | km_moteur | litres | montant | prix_litre | note
+
     const kilometrages = getKmHistory().map(item => ({
-        date:      item.date,
-        km:        item.km,
-        km_moteur: item.engineKm
+        id:          item.id || makeId(),
+        date_saisie: item.date || item.date_saisie || "",
+        km_chassis:  item.km || item.km_chassis || "",
+        km_moteur:   item.engineKm ?? item.km_moteur ?? 0,
+        source:      item.source || "application",
+        note:        item.note || ""
     }));
 
     const entretiens = getMaintenances().map(item => ({
-        date:      item.date,
-        km:        item.km,
-        km_moteur: item.engineKm,
-        type:      item.type,
-        notes:     item.notes || ""
+        id:          item.id || makeId(),
+        date:        item.date || "",
+        km_chassis:  item.km || item.km_chassis || "",
+        km_moteur:   item.engineKm ?? item.km_moteur ?? 0,
+        type:        item.type || "Autre",
+        description: item.notes || item.description || "",
+        cout:        item.cout || "",
+        note:        item.note || ""
     }));
 
     const carburant = getFuelHistory().map(item => ({
-        date:        item.date,
-        km:          item.km,
-        km_moteur:   item.engineKm,
-        litres:      item.liters,
-        prix_total:  item.price,
-        prix_litre:  item.pricePerL
+        id:          item.id || makeId(),
+        date:        item.date || "",
+        km_chassis:  item.km || item.km_chassis || "",
+        km_moteur:   item.engineKm ?? item.km_moteur ?? 0,
+        litres:      item.liters || item.litres || "",
+        montant:     item.price || item.montant || item.prix_total || "",
+        prix_litre:  item.pricePerL || item.prix_litre || "",
+        note:        item.note || ""
     }));
 
     try {
@@ -666,11 +678,17 @@ async function restoreFromCloudWithConfirmation() {
 async function fetchCloudData() {
     const response = await fetch(getCloudUrl(), { method: "GET", cache: "no-store" });
     const data = await response.json();
-    if (!data.success) throw new Error("Réponse Google Sheets invalide : " + (data.error || "?"));
+
+    if (!data.success) {
+        throw new Error("Réponse Google Sheets invalide : " + (data.error || "?"));
+    }
+
     return {
         kilometrages:  data.kilometrages  || [],
         entretiens:    data.entretiens    || [],
-        carburant:     data.carburant     || []
+        carburant:     data.carburant     || [],
+        modifications: data.modifications || [],
+        regles:        data.regles        || []
     };
 }
 
@@ -681,69 +699,87 @@ function applyCloudData(cloudData) {
     // — Kilométrages —
     const kmHistory = (cloudData.kilometrages || [])
         .map((obj, i) => {
-            const km       = parseInt(obj.km, 10);
-            const engineKm = parseInt(obj.km_moteur, 10);
-            const date     = normalizeCloudDate(obj.date);
+            const km = parseInt(obj.km || obj.km_chassis, 10);
+            const engineKm = parseInt(obj.km_moteur || obj.engineKm, 10);
+            const date = normalizeCloudDate(obj.date || obj.date_saisie);
+
             if (!km) return null;
+
             return {
-                id:        "cloud-km-" + i + "-" + km,
-                date:      date,
-                km,
-                engineKm:  isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                id: obj.id || "cloud-km-" + i + "-" + km,
+                date: date,
+                km: km,
+                engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                source: obj.source || "cloud",
+                note: obj.note || "",
                 createdAt: date + "T00:00:00"
             };
         })
         .filter(Boolean)
-        .sort((a, b) => b.km - a.km);
+        .sort((a, b) => Number(b.km) - Number(a.km));
 
     // — Entretiens —
     const maintenances = (cloudData.entretiens || [])
         .map((obj, i) => {
-            const km       = parseInt(obj.km, 10);
-            const engineKm = parseInt(obj.km_moteur, 10);
-            const date     = normalizeCloudDate(obj.date);
-            const type     = String(obj.type || "Autre");
-            const notes    = String(obj.notes || "");
-            if (!km) return null;
-            return {
-                id:        "cloud-mnt-" + i + "-" + km,
-                type,
-                date,
-                km,
-                engineKm:  isNaN(engineKm) ? getEngineKm(km) : engineKm,
-                notes,
-                createdAt: date + "T12:00:00"
-            };
-        })
-        .filter(Boolean);
+            const km = parseInt(obj.km || obj.km_chassis, 10);
+            const engineKm = parseInt(obj.km_moteur || obj.engineKm, 10);
+            const date = normalizeCloudDate(obj.date || obj.date_saisie);
+            const type = String(obj.type || "Autre");
+            const notes = String(obj.notes || obj.description || obj.note || "");
 
-    // — Carburant —
-    const fuelHistory = (cloudData.carburant || [])
-        .map((obj, i) => {
-            const km      = parseInt(obj.km, 10);
-            const liters  = parseFloat(obj.litres);
-            const price   = parseFloat(obj.prix_total);
-            const date    = normalizeCloudDate(obj.date);
-            if (!km || isNaN(liters) || isNaN(price)) return null;
+            if (!km) return null;
+
             return {
-                id:        "cloud-fuel-" + i + "-" + km,
-                date,
-                km,
-                engineKm:  getEngineKm(km),
-                liters,
-                price,
-                pricePerL: Math.round((price / liters) * 1000) / 1000,
+                id: obj.id || "cloud-mnt-" + i + "-" + km,
+                type: type,
+                date: date,
+                km: km,
+                engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                notes: notes,
+                cout: obj.cout || "",
                 createdAt: date + "T12:00:00"
             };
         })
         .filter(Boolean)
-        .sort((a, b) => b.km - a.km);
+        .sort((a, b) => {
+            const byDate = parseDateForSort(b.date) - parseDateForSort(a.date);
+            if (byDate !== 0) return byDate;
+            return Number(b.km) - Number(a.km);
+        });
 
-    const latestKm = kmHistory.length ? Math.max(...kmHistory.map(i => i.km)) : 170060;
-    localStorage.setItem("t5_vehicle_km",    String(latestKm));
-    localStorage.setItem("t5_km_history",    JSON.stringify(kmHistory));
-    localStorage.setItem("t5_maintenances",  JSON.stringify(maintenances));
-    localStorage.setItem("t5_fuel_history",  JSON.stringify(fuelHistory));
+    // — Carburant —
+    const fuelHistory = (cloudData.carburant || [])
+        .map((obj, i) => {
+            const km = parseInt(obj.km || obj.km_chassis, 10);
+            const engineKm = parseInt(obj.km_moteur || obj.engineKm, 10);
+            const liters = parseFloat(obj.litres || obj.liters);
+            const price = parseFloat(obj.prix_total || obj.montant || obj.price);
+            const date = normalizeCloudDate(obj.date || obj.date_saisie);
+
+            if (!km || isNaN(liters) || isNaN(price)) return null;
+
+            return {
+                id: obj.id || "cloud-fuel-" + i + "-" + km,
+                date: date,
+                km: km,
+                engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                liters: Math.round(liters * 100) / 100,
+                price: Math.round(price * 100) / 100,
+                pricePerL: parseFloat(obj.prix_litre || obj.pricePerL) || Math.round((price / liters) * 1000) / 1000,
+                createdAt: date + "T12:00:00"
+            };
+        })
+        .filter(Boolean)
+        .sort((a, b) => Number(b.km) - Number(a.km));
+
+    const latestKm = kmHistory.length
+        ? Math.max(...kmHistory.map(item => Number(item.km)))
+        : ENGINE_REPLACEMENT_KM;
+
+    localStorage.setItem("t5_vehicle_km", String(latestKm));
+    localStorage.setItem("t5_km_history", JSON.stringify(kmHistory));
+    localStorage.setItem("t5_maintenances", JSON.stringify(maintenances));
+    localStorage.setItem("t5_fuel_history", JSON.stringify(fuelHistory));
 }
 
 // POST vers Google Apps Script (mode no-cors → pas de retour lisible, normal)
@@ -776,7 +812,7 @@ function getEngineKm(vKm) { return Math.max(0, Number(vKm) - ENGINE_REPLACEMENT_
 function getKmHistory()   { return JSON.parse(localStorage.getItem("t5_km_history"))   || []; }
 function getMaintenances(){ return JSON.parse(localStorage.getItem("t5_maintenances")) || []; }
 function getFuelHistory() { return JSON.parse(localStorage.getItem("t5_fuel_history")) || []; }
-function getCloudUrl()    { return localStorage.getItem("t5_cloud_url") || ""; }
+function getCloudUrl()    { return localStorage.getItem("t5_cloud_url") || DEFAULT_CLOUD_URL; }
 function setText(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 
 function formatKm(value)  { return Number(value).toLocaleString("fr-FR") + " km"; }
@@ -790,13 +826,30 @@ function formatDateFr(dateString) {
 
 function normalizeCloudDate(value) {
     if (!value) return new Date().toISOString().slice(0, 10);
+
+    // Date Google Sheets sous forme de numéro de série, ex : 46192
+    if (typeof value === "number" || /^\d+$/.test(String(value))) {
+        const serial = Number(value);
+
+        if (!isNaN(serial) && serial > 20000) {
+            const date = new Date((serial - 25569) * 86400 * 1000);
+            return date.toISOString().slice(0, 10);
+        }
+    }
+
     if (value instanceof Date) return value.toISOString().slice(0, 10);
+
     const text = String(value);
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+
+    if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+        return text.slice(0, 10);
+    }
+
     if (/^\d{2}\/\d{2}\/\d{4}/.test(text)) {
         const parts = text.split(" ")[0].split("/");
         return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
+
     const parsed = new Date(text);
     return !isNaN(parsed.getTime()) ? parsed.toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
 }
