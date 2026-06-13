@@ -539,46 +539,83 @@ function updateHistory() {
 }
 
 // -------------------------------------------------------------------
-// CLOUD
+// CLOUD — aligné sur Google Apps Script V2 (Code.gs)
+// POST : { action:"sync", kilometrages:[...], entretiens:[...], carburant:[...] }
+// GET  : { success:true, kilometrages:[{date,km,km_moteur}], entretiens:[{...}], carburant:[{...}] }
 // -------------------------------------------------------------------
 function saveCloudConfig() {
     const url = document.getElementById("cloudUrl").value.trim();
     localStorage.setItem("t5_cloud_url", url);
-    updateCloudStatus(url ? "Cloud : configuré" : "Cloud : non configuré");
+    updateCloudStatus(url ? "☁️ Cloud configuré" : "Cloud : non configuré");
 }
 
 function loadCloudConfig() {
     const url = localStorage.getItem("t5_cloud_url") || "";
     document.getElementById("cloudUrl").value = url;
-    updateCloudStatus(url ? "Cloud : configuré" : "Cloud : non configuré");
+    updateCloudStatus(url ? "☁️ Cloud configuré" : "Cloud : non configuré");
 }
 
 function testCloud() {
     if (!getCloudUrl()) { alert("Merci de renseigner l'URL Google Apps Script."); return; }
-    syncRow("sync_log", [new Date().toLocaleString("fr-FR"), "test", "Test depuis T5 LifeBook"]);
-    updateCloudStatus("Test envoyé vers Google Sheets.");
+    // Envoie un sync vide juste pour vérifier la connexion
+    cloudPost({ action: "sync" });
+    updateCloudStatus("⏳ Test envoyé… vérifiez l'onglet sync_log dans Sheets.");
 }
 
-function syncAll() {
+async function syncAll() {
     if (!getCloudUrl()) { alert("Merci de renseigner l'URL Google Apps Script."); return; }
-    getKmHistory().forEach(item   => syncRow("kilometrages", [item.date, item.km, item.engineKm]));
-    getMaintenances().forEach(item => syncRow("entretiens",  [item.date, item.km, item.engineKm, item.type, item.notes]));
-    getFuelHistory().forEach(item  => syncRow("carburant",   [item.date, item.km, item.liters, item.price, item.pricePerL]));
-    syncRow("sync_log", [new Date().toLocaleString("fr-FR"), "sync_all", "Synchronisation complète demandée"]);
-    updateCloudStatus("Synchronisation envoyée.");
+    updateCloudStatus("⏳ Synchronisation en cours…");
+
+    // Formate les données en objets nommés attendus par replaceSheet()
+    const kilometrages = getKmHistory().map(item => ({
+        date:      item.date,
+        km:        item.km,
+        km_moteur: item.engineKm
+    }));
+
+    const entretiens = getMaintenances().map(item => ({
+        date:      item.date,
+        km:        item.km,
+        km_moteur: item.engineKm,
+        type:      item.type,
+        notes:     item.notes || ""
+    }));
+
+    const carburant = getFuelHistory().map(item => ({
+        date:        item.date,
+        km:          item.km,
+        km_moteur:   item.engineKm,
+        litres:      item.liters,
+        prix_total:  item.price,
+        prix_litre:  item.pricePerL
+    }));
+
+    try {
+        await cloudPost({ action: "sync", kilometrages, entretiens, carburant });
+        updateCloudStatus("✅ Synchronisé le " + new Date().toLocaleString("fr-FR"));
+    } catch (err) {
+        console.error(err);
+        updateCloudStatus("❌ Erreur de synchronisation.");
+    }
 }
 
+// Appelé au démarrage si localStorage vide
 async function autoRestoreFromCloudIfPossible() {
     const url = getCloudUrl();
     if (!url) return;
     try {
-        updateCloudStatus("Restauration automatique en cours...");
+        updateCloudStatus("⏳ Restauration automatique…");
         const cloudData = await fetchCloudData();
-        if (cloudData && (cloudData.kilometrages.length || cloudData.entretiens.length)) {
+        const hasData = cloudData.kilometrages.length || cloudData.entretiens.length || cloudData.carburant.length;
+        if (hasData) {
             applyCloudData(cloudData);
-            updateCloudStatus("Données restaurées automatiquement depuis Google Sheets.");
+            updateCloudStatus("✅ Données restaurées depuis Google Sheets.");
+        } else {
+            updateCloudStatus("☁️ Cloud configuré — aucune donnée distante.");
         }
-    } catch { updateCloudStatus("Restauration automatique impossible."); }
+    } catch {
+        updateCloudStatus("⚠️ Restauration automatique impossible.");
+    }
 }
 
 async function restoreFromCloudWithConfirmation() {
@@ -586,60 +623,112 @@ async function restoreFromCloudWithConfirmation() {
     const ok = confirm("Restaurer depuis Google Sheets ?\n\nLes données locales actuelles seront remplacées par les données cloud.");
     if (!ok) return;
     try {
-        updateCloudStatus("Restauration depuis Google Sheets...");
+        updateCloudStatus("⏳ Restauration depuis Google Sheets…");
         const cloudData = await fetchCloudData();
         applyCloudData(cloudData);
         updateDashboard();
-        updateCloudStatus("Restauration terminée.");
+        updateCloudStatus("✅ Restauration terminée le " + new Date().toLocaleString("fr-FR"));
     } catch (error) {
         console.error(error);
-        updateCloudStatus("Erreur pendant la restauration.");
-        alert("Impossible de restaurer depuis Google Sheets.");
+        updateCloudStatus("❌ Erreur pendant la restauration.");
+        alert("Impossible de restaurer depuis Google Sheets.\n\nVérifiez l'URL et les permissions du script.");
     }
 }
 
+// GET — lit toutes les feuilles
 async function fetchCloudData() {
     const response = await fetch(getCloudUrl(), { method: "GET", cache: "no-store" });
     const data = await response.json();
-    if (!data.success) throw new Error("Réponse Google Sheets invalide.");
-    return { kilometrages: data.kilometrages || [], entretiens: data.entretiens || [] };
+    if (!data.success) throw new Error("Réponse Google Sheets invalide : " + (data.error || "?"));
+    return {
+        kilometrages:  data.kilometrages  || [],
+        entretiens:    data.entretiens    || [],
+        carburant:     data.carburant     || []
+    };
 }
 
+// Applique les données cloud dans localStorage
+// Les objets reçus ont des clés nommées (ex: { date, km, km_moteur, type, notes })
 function applyCloudData(cloudData) {
+
+    // — Kilométrages —
     const kmHistory = (cloudData.kilometrages || [])
-        .map((row, index) => {
-            const date    = String(row[0] || "");
-            const km      = parseInt(row[1], 10);
-            const engineKm = parseInt(row[2], 10);
+        .map((obj, i) => {
+            const km       = parseInt(obj.km, 10);
+            const engineKm = parseInt(obj.km_moteur, 10);
+            const date     = normalizeCloudDate(obj.date);
             if (!km) return null;
-            return { id: "cloud-km-" + index + "-" + km, date: date || "Date inconnue", km, engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm, createdAt: parseDateForSort(date).toISOString() };
+            return {
+                id:        "cloud-km-" + i + "-" + km,
+                date:      date,
+                km,
+                engineKm:  isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                createdAt: date + "T00:00:00"
+            };
         })
         .filter(Boolean)
         .sort((a, b) => b.km - a.km);
 
+    // — Entretiens —
     const maintenances = (cloudData.entretiens || [])
-        .map((row, index) => {
-            const date     = normalizeCloudDate(row[0]);
-            const km       = parseInt(row[1], 10);
-            const engineKm = parseInt(row[2], 10);
-            const type     = String(row[3] || "Autre");
-            const notes    = String(row[4] || "");
+        .map((obj, i) => {
+            const km       = parseInt(obj.km, 10);
+            const engineKm = parseInt(obj.km_moteur, 10);
+            const date     = normalizeCloudDate(obj.date);
+            const type     = String(obj.type || "Autre");
+            const notes    = String(obj.notes || "");
             if (!km) return null;
-            return { id: "cloud-maintenance-" + index + "-" + km, type: type || "Autre", date, km, engineKm: isNaN(engineKm) ? getEngineKm(km) : engineKm, notes, createdAt: date + "T12:00:00" };
+            return {
+                id:        "cloud-mnt-" + i + "-" + km,
+                type,
+                date,
+                km,
+                engineKm:  isNaN(engineKm) ? getEngineKm(km) : engineKm,
+                notes,
+                createdAt: date + "T12:00:00"
+            };
         })
         .filter(Boolean);
 
+    // — Carburant —
+    const fuelHistory = (cloudData.carburant || [])
+        .map((obj, i) => {
+            const km      = parseInt(obj.km, 10);
+            const liters  = parseFloat(obj.litres);
+            const price   = parseFloat(obj.prix_total);
+            const date    = normalizeCloudDate(obj.date);
+            if (!km || isNaN(liters) || isNaN(price)) return null;
+            return {
+                id:        "cloud-fuel-" + i + "-" + km,
+                date,
+                km,
+                engineKm:  getEngineKm(km),
+                liters,
+                price,
+                pricePerL: Math.round((price / liters) * 1000) / 1000,
+                createdAt: date + "T12:00:00"
+            };
+        })
+        .filter(Boolean)
+        .sort((a, b) => b.km - a.km);
+
     const latestKm = kmHistory.length ? Math.max(...kmHistory.map(i => i.km)) : 170060;
-    localStorage.setItem("t5_vehicle_km",  String(latestKm));
-    localStorage.setItem("t5_km_history",  JSON.stringify(kmHistory));
-    localStorage.setItem("t5_maintenances", JSON.stringify(maintenances));
+    localStorage.setItem("t5_vehicle_km",    String(latestKm));
+    localStorage.setItem("t5_km_history",    JSON.stringify(kmHistory));
+    localStorage.setItem("t5_maintenances",  JSON.stringify(maintenances));
+    localStorage.setItem("t5_fuel_history",  JSON.stringify(fuelHistory));
 }
 
-function syncRow(table, values) {
+// POST vers Google Apps Script (mode no-cors → pas de retour lisible, normal)
+function cloudPost(payload) {
     const url = getCloudUrl();
-    if (!url) return;
-    fetch(url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ table, values }) })
-        .catch(() => updateCloudStatus("Erreur de synchronisation."));
+    if (!url) return Promise.reject("Pas d'URL configurée.");
+    return fetch(url, {
+        method:  "POST",
+        mode:    "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+    });
 }
 
 function updateCloudStatus(message) {
