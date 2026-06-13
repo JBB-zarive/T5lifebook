@@ -814,3 +814,12 @@ function makeId() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return String(Date.now()) + "-" + Math.random().toString(16).slice(2);
 }
+
+function syncRow(table, values) {
+    // Compatibilité ancienne logique.
+    // On synchronise tout le carnet avec le backend V2.
+    syncAll().catch(error => {
+        console.error("Erreur syncRow :", error);
+        updateCloudStatus("⚠️ Donnée enregistrée en local, sync cloud échouée.");
+    });
+}
