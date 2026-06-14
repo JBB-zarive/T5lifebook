@@ -3,7 +3,7 @@
 // Carburant + Modales + Entretiens triés
 // =======================================
 
-const ENGINE_REPLACEMENT_KM   = 170000;
+const ENGINE_REPLACEMENT_KM   = 170345;
 const VEHICLE_GOAL_KM          = 400000;
 const ENGINE_REPLACEMENT_DATE_FR = "19/06/2026";
 const ENGINE_REPLACEMENT_ISO   = "2026-06-19"; // date ISO du moteur neuf
