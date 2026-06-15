@@ -267,7 +267,10 @@ function updateDashboard() {
     const engineKm  = getEngineKm(vehicleKm);
 
     setText("vehicleKm", formatKm(vehicleKm));
-    setText("engineKm",  `${formatKm(engineKm)} • remplacé le ${ENGINE_REPLACEMENT_DATE_FR}`);
+   const engineKmEl = document.getElementById("engineKm");
+if (engineKmEl) {
+    engineKmEl.innerHTML = `<strong>${formatKm(engineKm)}</strong> <span>• remplacé le ${ENGINE_REPLACEMENT_DATE_FR}</span>`;
+}
 
     updateVehicleGoal(vehicleKm);
     updateMaintenanceList();
