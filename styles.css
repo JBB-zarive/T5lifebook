@@ -580,6 +580,14 @@ button:active {
         align-items: flex-start;
     }
 
+   #engineKm {
+    font-weight: 400;
+}
+
+#engineKm strong {
+    font-weight: 800;
+}
+
     .maintenance-header span {
         text-align: left;
     }
