@@ -38,12 +38,12 @@ body {
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     min-height: 100vh;
-    padding-bottom: calc(var(--nav-height) + 18px + env(safe-area-inset-bottom));
+    padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 18px);
 }
 
 /* ===== HEADER ===== */
 .header {
-    padding: 22px 12px 8px;
+    padding: calc(22px + env(safe-area-inset-top)) 12px 8px;
     text-align: center;
 }
 
@@ -69,7 +69,7 @@ body {
 /* ===== QUICK ACTIONS BAR ===== */
 .quick-actions {
     position: sticky;
-    top: 0;
+    top: env(safe-area-inset-top);
     z-index: 400;
     display: flex;
     gap: 10px;
@@ -652,7 +652,8 @@ button:active {
     bottom: 0;
     z-index: 900;
     display: flex;
-    height: var(--nav-height);
+    height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+    padding-top: 8px;
     padding-bottom: env(safe-area-inset-bottom);
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(16px) saturate(150%);
@@ -678,9 +679,17 @@ button:active {
 }
 
 .nav-icon {
-    font-size: 1.28rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
     transition: transform 0.18s ease;
+}
+
+.nav-icon svg {
+    width: 22px;
+    height: 22px;
+    display: block;
 }
 
 .nav-btn.active {
