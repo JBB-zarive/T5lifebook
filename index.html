@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
     <title>T5 LifeBook</title>
-    
-    <link rel="stylesheet" href="styles.css?v=42">
+
+    <link rel="stylesheet" href="styles.css?v=44">
 
     <!-- Icônes -->
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
@@ -16,16 +16,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="T5 LifeBook">
-    
+
     <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="T5 LifeBook">
 </head>
 
 
 
-    
 <body>
 
 <!-- ===== MODAL KILOMÉTRAGE ===== -->
@@ -104,86 +100,138 @@
     <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
 </header>
 
-<!-- Barre d'actions rapides -->
+<!-- Barre d'actions rapides (accessible depuis tous les onglets) -->
 <div class="quick-actions">
-    <button class="quick-btn" id="openKmModal">📍 Km</button>
-    <button class="quick-btn fuel-btn" id="openFuelModal">⛽ Plein</button>
-    <button class="quick-btn" id="openMaintenanceBtn">🛠 Entretien</button>
+    <button class="quick-btn" id="openKmModal"><span class="qi">📍</span>Km</button>
+    <button class="quick-btn fuel-btn" id="openFuelModal"><span class="qi">⛽</span>Plein</button>
+    <button class="quick-btn maint-btn" id="openMaintenanceBtn"><span class="qi">🛠</span>Entretien</button>
 </div>
 
 <main class="container">
 
-    <section class="card">
-        <h2>🚐 Véhicule</h2>
-        <div class="stat">
-            <span>VIN</span>
-            <strong>WV1ZZZ7HZEH003985</strong>
+    <!-- ===================== PAGE : TABLEAU DE BORD ===================== -->
+    <section class="page" id="page-dashboard">
+
+        <div class="card hero-card">
+            <h2>🚐 Véhicule</h2>
+            <div class="stat">
+                <span>VIN</span>
+                <strong>WV1ZZZ7HZEH003985</strong>
+            </div>
+            <div class="stat">
+                <span>Immatriculation</span>
+                <strong>CW-374-CL</strong>
+            </div>
+            <div class="stat">
+                <span>Modèle</span>
+                <strong>T5.1 - 4Motion</strong>
+            </div>
+            <div class="stat">
+                <span>Km châssis</span>
+                <strong id="vehicleKm">170 000 km</strong>
+            </div>
+            <div class="stat">
+                <span>Km moteur</span>
+                <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
+            </div>
         </div>
-        <div class="stat">
-            <span>Immatriculation</span>
-            <strong>CW-374-CL</strong>
+
+        <div class="card">
+            <h2>🎯 Objectif 400 000 km</h2>
+            <div class="progress-container">
+                <div class="progress-bar" id="vehicleProgress"></div>
+            </div>
+            <p id="vehicleProgressText">170 060 / 400 000 km</p>
         </div>
-        <div class="stat">
-            <span>Modèle</span>
-            <strong>T5.1 - 4Motion</strong>
+
+        <div class="card" id="statsCard">
+            <h2>📊 Statistiques carburant</h2>
+            <div id="dashKpis" class="fuel-stats hidden"></div>
+            <div id="consoChart"></div>
         </div>
-        <div class="stat">
-            <span>Km châssis</span>
-            <strong id="vehicleKm">170 000 km</strong>
+
+        <div class="card" id="upcomingCard">
+            <h2>⏭ Prochains entretiens</h2>
+            <div id="upcomingList"><p>Aucune donnée.</p></div>
         </div>
-        <div class="stat">
-            <span>Km moteur</span>
-            <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
+
+    </section>
+
+    <!-- ===================== PAGE : ENTRETIEN ===================== -->
+    <section class="page" id="page-entretien">
+        <div class="card">
+            <div class="card-title-row">
+                <h2>🛠 Entretien</h2>
+                <button class="mini-btn" id="openMaintenanceBtnCard">+ Ajouter</button>
+            </div>
+            <div id="maintenanceList"></div>
         </div>
     </section>
 
-    <section class="card">
-        <h2>🎯 Objectif 400 000 km</h2>
-        <div class="progress-container">
-            <div class="progress-bar" id="vehicleProgress"></div>
+    <!-- ===================== PAGE : CARBURANT ===================== -->
+    <section class="page" id="page-carburant">
+        <div class="card" id="fuelHistoryCard">
+            <h2>⛽ Historique carburant</h2>
+            <div id="fuelStats" class="fuel-stats hidden"></div>
+            <div id="fuelList"><p>Aucun plein enregistré.</p></div>
         </div>
-        <p id="vehicleProgressText">170 060 / 400 000 km</p>
     </section>
 
-    <section class="card">
-        <div class="card-title-row">
-            <h2>🛠 Entretien</h2>
-            <button class="mini-btn" id="openMaintenanceBtnCard">+ Ajouter</button>
+    <!-- ===================== PAGE : HISTORIQUE ===================== -->
+    <section class="page" id="page-historique">
+        <div class="card">
+            <h2>📚 Historique</h2>
+            <div id="historyList">
+                <p>Aucun historique enregistré.</p>
+            </div>
         </div>
-        <div id="maintenanceList"></div>
     </section>
 
-    <section class="card" id="fuelHistoryCard">
-        <h2>⛽ Historique carburant</h2>
-        <div id="fuelStats" class="fuel-stats hidden"></div>
-        <div id="fuelList"><p>Aucun plein enregistré.</p></div>
-    </section>
-
-    <section class="card">
-        <h2>☁️ Passerelle Google Sheets</h2>
-        <div class="input-group">
-            <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
-            <button id="saveCloudBtn">Enregistrer</button>
-        </div>
-        <div class="button-row">
-            <button class="secondary-btn" id="testCloudBtn">Tester</button>
-            <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
-            <button class="secondary-btn" id="restoreCloudBtn">Restaurer</button>
-        </div>
-        <p id="cloudStatus">Cloud : non configuré</p>
-    </section>
-
-    <section class="card">
-        <h2>📚 Historique</h2>
-        <div id="historyList">
-            <p>Aucun historique enregistré.</p>
+    <!-- ===================== PAGE : RÉGLAGES ===================== -->
+    <section class="page" id="page-reglages">
+        <div class="card">
+            <h2>☁️ Passerelle Google Sheets</h2>
+            <div class="input-group">
+                <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
+                <button id="saveCloudBtn">Enregistrer</button>
+            </div>
+            <div class="button-row">
+                <button class="secondary-btn" id="testCloudBtn">Tester</button>
+                <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
+                <button class="secondary-btn" id="restoreCloudBtn">Restaurer</button>
+            </div>
+            <p id="cloudStatus">Cloud : non configuré</p>
         </div>
     </section>
 
 </main>
 
-<footer class="footer">T5 LifeBook © 2026</footer>
+<!-- ===== NAVIGATION BASSE ===== -->
+<nav class="bottom-nav">
+    <button class="nav-btn" data-page="dashboard">
+        <span class="nav-icon">🏠</span>
+        <span>Accueil</span>
+    </button>
+    <button class="nav-btn" data-page="entretien">
+        <span class="nav-icon">🛠</span>
+        <span>Entretien</span>
+    </button>
+    <button class="nav-btn" data-page="carburant">
+        <span class="nav-icon">⛽</span>
+        <span>Carburant</span>
+    </button>
+    <button class="nav-btn" data-page="historique">
+        <span class="nav-icon">📚</span>
+        <span>Historique</span>
+    </button>
+    <button class="nav-btn" data-page="reglages">
+        <span class="nav-icon">⚙️</span>
+        <span>Réglages</span>
+    </button>
+</nav>
 
-<script src="app.js?v=42"></script>
+<script src="app.js?v=43"></script>
+<script src="nav.js?v=43"></script>
+<script src="charts.js?v=1"></script>
 </body>
 </html>
