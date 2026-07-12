@@ -41,6 +41,16 @@ body {
     padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 18px);
 }
 
+.status-bar-fill {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background: var(--bg);
+    z-index: 950;
+}
+
 /* ===== HEADER ===== */
 .header {
     padding: calc(22px + env(safe-area-inset-top)) 12px 8px;

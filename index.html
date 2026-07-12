@@ -24,6 +24,11 @@
 
 <body>
 
+<!-- Bandeau opaque fixe couvrant la zone de l'encoche / status bar iPhone,
+     nécessaire car apple-mobile-web-app-status-bar-style=black-translucent
+     laisse le contenu défiler sous la zone système sinon. -->
+<div class="status-bar-fill"></div>
+
 <!-- ===== MODAL KILOMÉTRAGE ===== -->
 <div class="modal-overlay hidden" id="kmModalOverlay">
     <div class="modal">
