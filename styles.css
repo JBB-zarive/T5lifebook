@@ -98,28 +98,28 @@ body {
     border-radius: 14px;
     font-size: 0.85rem;
     font-weight: 700;
-    background: var(--blue);
+    background: linear-gradient(160deg, #3d4b68, #313e58);
+    border: 1px solid rgba(148, 163, 184, 0.18);
     color: white;
-    border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+    gap: 7px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
     transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
 }
 
-.quick-btn .qi { font-size: 1rem; }
-
-.quick-btn.fuel-btn {
-    background: var(--fuel);
-    box-shadow: 0 6px 16px rgba(249, 115, 22, 0.28);
+.quick-btn .qi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.quick-btn.maint-btn {
-    background: #334155;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+.quick-btn .qi svg {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 .quick-btn:active {
