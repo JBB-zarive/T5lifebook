@@ -1,23 +1,23 @@
 /* ===================================
-   T5 LifeBook - styles.css V4.0
-   Dark Mode iPhone friendly + Tab Nav
+   T5 LifeBook - styles.css V5.0
+   Palette "Van Life" (crème / bleu pétrole / terracotta)
 =================================== */
 
 :root {
-    --bg: #0f172a;
-    --bg-elevated: #0b1220;
-    --card: #1e293b;
-    --text: #f8fafc;
-    --text-secondary: #94a3b8;
-    --blue: #2563eb;
-    --blue-light: #60a5fa;
-    --green: #16a34a;
-    --orange: #f59e0b;
-    --red: #dc2626;
-    --fuel: #f97316;
-    --border: #334155;
+    --bg: #f6f1e6;
+    --bg-elevated: #efe4cf;
+    --card: #ffffff;
+    --text: #1c3b4f;
+    --text-secondary: #8a7d6b;
+    --blue: #1c6f8c;
+    --blue-light: #3f9db8;
+    --green: #6f9b5e;
+    --orange: #cf8a4a;
+    --red: #b5473f;
+    --fuel: #cf8a4a;
+    --border: #e6d9c2;
     --radius: 16px;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    --shadow: 0 10px 28px rgba(60, 45, 20, 0.10);
     --nav-height: 66px;
 }
 
@@ -33,7 +33,7 @@ html {
 
 body {
     background:
-        radial-gradient(1200px 500px at 50% -10%, rgba(37, 99, 235, 0.16), transparent 60%),
+        radial-gradient(900px 500px at 50% -8%, rgba(207, 138, 74, 0.16), transparent 60%),
         var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -62,7 +62,7 @@ body {
     line-height: 1.15;
     margin-bottom: 6px;
     white-space: nowrap;
-    background: linear-gradient(90deg, #ffffff, var(--blue-light));
+    background: linear-gradient(90deg, var(--text), var(--blue));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -85,10 +85,10 @@ body {
     gap: 10px;
     justify-content: center;
     padding: 12px 16px;
-    background: rgba(15, 23, 42, 0.72);
+    background: rgba(246, 241, 230, 0.86);
     backdrop-filter: blur(14px) saturate(150%);
     -webkit-backdrop-filter: blur(14px) saturate(150%);
-    border-bottom: 1px solid rgba(51, 65, 85, 0.6);
+    border-bottom: 1px solid rgba(230, 217, 194, 0.9);
 }
 
 .quick-btn {
@@ -98,15 +98,15 @@ body {
     border-radius: 14px;
     font-size: 0.85rem;
     font-weight: 700;
-    background: linear-gradient(160deg, #3d4b68, #313e58);
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: linear-gradient(160deg, var(--blue-light), var(--blue));
+    border: 1px solid rgba(28, 111, 140, 0.25);
     color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 7px;
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.35);
+    box-shadow: 0 6px 16px rgba(28, 111, 140, 0.25);
     transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
 }
 
@@ -131,7 +131,7 @@ body {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.65);
+    background: rgba(28, 30, 25, 0.45);
     backdrop-filter: blur(4px);
     z-index: 1000;
     display: flex;
@@ -151,7 +151,7 @@ body {
 }
 
 .modal {
-    background: #1e293b;
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 24px 24px 0 0;
     padding: 24px 20px 36px;
@@ -178,7 +178,7 @@ body {
 }
 
 .modal-close {
-    background: #334155;
+    background: var(--border);
     border: none;
     color: var(--text-secondary);
     width: 32px;
@@ -224,7 +224,7 @@ body {
 
 /* ===== CARD ===== */
 .card {
-    background: linear-gradient(180deg, #212f45 0%, var(--card) 60%);
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 16px;
@@ -232,22 +232,11 @@ body {
 }
 
 .card.hero-card {
-    border-color: rgba(96, 165, 250, 0.35);
+    border-color: rgba(28, 111, 140, 0.22);
 }
 
 .hero-card {
     text-align: center;
-}
-
-.hero-van {
-    color: var(--blue-light);
-    opacity: 0.85;
-    margin-bottom: 2px;
-}
-
-.hero-van .van-svg {
-    width: 108px;
-    height: auto;
 }
 
 .hero-ring-wrap {
@@ -357,7 +346,7 @@ textarea {
     border-radius: 12px;
     border: 1px solid var(--border);
     background: var(--bg-elevated);
-    color: white;
+    color: var(--text);
     font-size: 1rem;
 }
 
@@ -389,7 +378,8 @@ button:active {
 }
 
 .secondary-btn {
-    background: #334155;
+    background: var(--border);
+    color: var(--text);
 }
 
 .mini-btn {
@@ -419,29 +409,22 @@ button:active {
 }
 
 .stat strong {
-    color: white;
+    color: var(--text);
     font-size: 0.92rem;
     text-align: right;
     overflow-wrap: anywhere;
 }
 
 /* ===== PROGRESS ===== */
-.progress-container,
 .maintenance-progress {
     width: 100%;
-    height: 22px;
+    height: 16px;
     background: var(--bg-elevated);
     border-radius: 999px;
     overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.maintenance-progress {
-    height: 16px;
     margin-bottom: 4px;
 }
 
-.progress-bar,
 .maintenance-bar {
     width: 0%;
     height: 100%;
@@ -449,18 +432,9 @@ button:active {
     transition: width 0.4s ease;
 }
 
-.progress-bar {
-    background: linear-gradient(90deg, #2563eb, #60a5fa);
-}
-
-.maintenance-bar.ok     { background: linear-gradient(90deg, #16a34a, #4ade80); }
-.maintenance-bar.warning{ background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-.maintenance-bar.danger { background: linear-gradient(90deg, #dc2626, #f87171); }
-
-#vehicleProgressText {
-    color: var(--text-secondary);
-    font-size: 0.88rem;
-}
+.maintenance-bar.ok      { background: linear-gradient(90deg, #6f9b5e, #9bc588); }
+.maintenance-bar.warning { background: linear-gradient(90deg, #cf8a4a, #e3ab74); }
+.maintenance-bar.danger  { background: linear-gradient(90deg, #b5473f, #d47b73); }
 
 /* ===== MAINTENANCE ITEMS ===== */
 .maintenance-group-title {
@@ -531,7 +505,7 @@ button:active {
 }
 
 .no-interval {
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(232, 220, 198, 0.45);
     border-radius: 12px;
     padding: 12px;
     margin: 6px 0 0;
@@ -573,8 +547,7 @@ button:active {
     align-items: center;
 }
 
-/* ===== FUEL HISTORY V3.1 ===== */
-
+/* ===== FUEL HISTORY ===== */
 .fuel-stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -608,8 +581,8 @@ button:active {
 }
 
 .fuel-stat-box.highlight {
-    border-color: rgba(249, 115, 22, 0.4);
-    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(207, 138, 74, 0.45);
+    background: rgba(207, 138, 74, 0.10);
 }
 
 .fuel-stat-box.green .value { color: var(--green); }
@@ -702,8 +675,8 @@ button:active {
     margin-top: 10px;
     padding: 9px 10px;
     border-radius: 12px;
-    background: rgba(249, 115, 22, 0.10);
-    border: 1px solid rgba(249, 115, 22, 0.25);
+    background: rgba(207, 138, 74, 0.12);
+    border: 1px solid rgba(207, 138, 74, 0.3);
 
     display: flex;
     justify-content: space-between;
@@ -727,9 +700,9 @@ button:active {
     margin-top: 10px;
     padding: 9px 10px;
     border-radius: 12px;
-    background: rgba(220, 38, 38, 0.10);
-    border: 1px solid rgba(220, 38, 38, 0.25);
-    color: #fca5a5;
+    background: rgba(181, 71, 63, 0.10);
+    border: 1px solid rgba(181, 71, 63, 0.28);
+    color: #8a3a34;
     font-size: 0.78rem;
 }
 
@@ -746,16 +719,24 @@ button:active {
     border-left-color: var(--fuel);
 }
 
-.history-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+.history-item strong {
+    display: block;
+    font-size: 0.98rem;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.history-meta {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
     margin-bottom: 6px;
 }
 
-.history-item small {
-    color: var(--text-secondary);
-    font-size: 0.76rem;
+.history-detail {
+    font-size: 0.86rem;
+    color: var(--text);
+    line-height: 1.4;
 }
 
 /* ===== CLOUD ===== */
@@ -780,11 +761,11 @@ button:active {
     height: calc(var(--nav-height) + env(safe-area-inset-bottom));
     padding-top: 8px;
     padding-bottom: env(safe-area-inset-bottom);
-    background: rgba(15, 23, 42, 0.85);
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
-    border-top: 1px solid rgba(51, 65, 85, 0.6);
-    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(230, 217, 194, 0.9);
+    box-shadow: 0 -8px 24px rgba(60, 45, 20, 0.10);
 }
 
 .nav-btn {
@@ -818,7 +799,7 @@ button:active {
 }
 
 .nav-btn.active {
-    color: var(--blue-light);
+    color: var(--blue);
 }
 
 .nav-btn.active .nav-icon {
@@ -829,7 +810,7 @@ button:active {
     transform: scale(0.9);
 }
 
-/* ===== ÉCRAN DE SYNCHRONISATION (van sur planète) ===== */
+/* ===== ÉCRAN DE SYNCHRONISATION ===== */
 .sync-splash {
     position: fixed;
     inset: 0;
@@ -839,9 +820,10 @@ button:active {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 24px;
     background:
-        radial-gradient(900px 500px at 50% 15%, rgba(37, 99, 235, 0.18), transparent 60%),
-        linear-gradient(180deg, #0b1220 0%, #0f172a 55%, #142238 100%);
+        radial-gradient(700px 500px at 50% 20%, rgba(207, 138, 74, 0.22), transparent 65%),
+        var(--bg);
     transition: opacity 0.5s ease;
 }
 
@@ -850,151 +832,70 @@ button:active {
     pointer-events: none;
 }
 
-.sync-scene {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-    height: 46vh;
-    max-height: 340px;
-    overflow: hidden;
-}
-
-.sync-stars {
+.sync-glow {
     position: absolute;
-    inset: 0;
-    background-image:
-        radial-gradient(1.6px 1.6px at 20px 30px, #fff, transparent),
-        radial-gradient(1.6px 1.6px at 90px 70px, #fff, transparent),
-        radial-gradient(1.2px 1.2px at 150px 25px, #fff, transparent),
-        radial-gradient(1.6px 1.6px at 220px 85px, #fff, transparent),
-        radial-gradient(1.2px 1.2px at 280px 45px, #fff, transparent),
-        radial-gradient(1.4px 1.4px at 320px 15px, #fff, transparent);
-    background-repeat: repeat-x;
-    background-size: 340px 140px;
-    opacity: 0.55;
-    animation: syncStarsDrift 70s linear infinite;
-}
-
-@keyframes syncStarsDrift {
-    from { background-position-x: 0; }
-    to   { background-position-x: -680px; }
-}
-
-.sync-hills {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 108px;
-    height: 64px;
-    background-image:
-        radial-gradient(70px 40px at 40px 64px, #1c2b46 62%, transparent 64%),
-        radial-gradient(90px 50px at 170px 70px, #1a273e 62%, transparent 64%),
-        radial-gradient(75px 42px at 300px 64px, #1c2b46 62%, transparent 64%);
-    background-repeat: repeat-x;
-    background-size: 340px 90px;
-    opacity: 0.9;
-    animation: syncHillsDrift 16s linear infinite;
-}
-
-@keyframes syncHillsDrift {
-    from { background-position-x: 0; }
-    to   { background-position-x: -340px; }
-}
-
-.sync-planet {
-    position: absolute;
+    top: 12%;
     left: 50%;
-    bottom: -230px;
-    width: 760px;
-    height: 260px;
-    margin-left: -380px;
+    width: 340px;
+    height: 340px;
+    margin-left: -170px;
     border-radius: 50%;
-    background: linear-gradient(180deg, #2a3a5c 0%, #16233a 100%);
-    border-top: 2px solid rgba(148, 163, 184, 0.45);
+    background: radial-gradient(circle, rgba(207, 138, 74, 0.35), transparent 70%);
+    filter: blur(20px);
+    animation: syncGlowPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes syncGlowPulse {
+    0%, 100% { transform: scale(1);     opacity: 0.8; }
+    50%      { transform: scale(1.08);  opacity: 1;   }
+}
+
+.sync-poster-wrap {
+    position: relative;
+    width: 78%;
+    max-width: 280px;
+    border-radius: 18px;
     overflow: hidden;
+    box-shadow: 0 24px 50px rgba(60, 45, 20, 0.28);
+    animation:
+        syncPosterIn 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        syncPosterBreathe 3.2s ease-in-out 0.7s infinite;
 }
 
-.sync-planet::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(
-        90deg,
-        rgba(148, 163, 184, 0.28) 0 2px,
-        transparent 2px 46px
-    );
-    animation: syncPlanetSpin 4.5s linear infinite;
+@keyframes syncPosterIn {
+    from { opacity: 0; transform: scale(0.92) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-@keyframes syncPlanetSpin {
-    from { background-position-x: 0; }
-    to   { background-position-x: -46px; }
+@keyframes syncPosterBreathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.015); }
 }
 
-.sync-van {
-    position: absolute;
-    left: 50%;
-    bottom: 96px;
-    width: 130px;
-    margin-left: -65px;
-    color: #e2e8f0;
-    animation: syncVanBob 1.5s ease-in-out infinite;
-}
-
-@keyframes syncVanBob {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-4px); }
-}
-
-.sync-van .van-svg {
+.sync-poster {
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
-    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35));
 }
 
-.van-wheel {
-    transform-box: fill-box;
-    transform-origin: 50% 50%;
-    animation: syncWheelSpin 0.7s linear infinite;
-}
-
-@keyframes syncWheelSpin {
-    to { transform: rotate(360deg); }
-}
-
-.sync-dust {
+.sync-poster-shimmer {
     position: absolute;
-    left: -6px;
-    bottom: 10px;
-    width: 30px;
-    height: 20px;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, transparent 66%);
+    background-size: 220% 100%;
+    animation: syncShimmerSweep 2.6s ease-in-out infinite;
 }
 
-.sync-dust span {
-    position: absolute;
-    left: 14px;
-    bottom: 4px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(148, 163, 184, 0.55);
-    animation: syncDustPuff 1.1s ease-out infinite;
-}
-
-.sync-dust span:nth-child(2) { animation-delay: 0.25s; left: 8px; }
-.sync-dust span:nth-child(3) { animation-delay: 0.5s;  left: 2px; }
-
-@keyframes syncDustPuff {
-    0%   { transform: translate(0, 0) scale(0.6); opacity: 0.6; }
-    100% { transform: translate(-22px, -8px) scale(1.3); opacity: 0; }
+@keyframes syncShimmerSweep {
+    0%   { background-position: 140% 0; }
+    100% { background-position: -60% 0; }
 }
 
 .sync-text {
-    margin-top: 18px;
-    color: var(--text-secondary);
+    margin-top: 22px;
+    color: var(--text);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.01em;
     animation: syncTextPulse 1.8s ease-in-out infinite;
 }
@@ -1007,18 +908,17 @@ button:active {
 .sync-dots span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes syncDotBlink {
-    0%, 100% { opacity: 0.2; }
+    0%, 100% { opacity: 0.25; }
     50%      { opacity: 1; }
 }
 
 @keyframes syncTextPulse {
-    0%, 100% { opacity: 0.7; }
+    0%, 100% { opacity: 0.75; }
     50%      { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .sync-stars, .sync-hills, .sync-planet::before, .sync-van,
-    .van-wheel, .sync-dust span, .sync-text, .sync-dots span {
+    .sync-glow, .sync-poster-wrap, .sync-poster-shimmer, .sync-text, .sync-dots span {
         animation: none !important;
     }
 }
@@ -1050,19 +950,18 @@ button:active {
         text-align: left;
     }
 
-    .maintenance-header,
-    .history-top {
+    .maintenance-header {
         flex-direction: column;
         align-items: flex-start;
     }
 
-   #engineKm {
-    font-weight: 400;
-}
+    #engineKm {
+        font-weight: 400;
+    }
 
-#engineKm strong {
-    font-weight: 800;
-}
+    #engineKm strong {
+        font-weight: 800;
+    }
 
     .maintenance-header span {
         text-align: left;
