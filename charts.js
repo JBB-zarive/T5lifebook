@@ -130,8 +130,12 @@ function renderConsoChart() {
     const firstLabel = coords[0];
     const lastLabel  = coords[coords.length - 1];
 
+    const trendIconDown = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M6 9l6 6 6-6"/></svg>';
+    const trendIconUp   = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M6 15l6-6 6 6"/></svg>';
+    const trendIconFlat = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="M5 12h14"/></svg>';
+
     const trend = lastLabel.conso - firstLabel.conso;
-    const trendLabel = trend <= -0.05 ? "▼ en baisse" : trend >= 0.05 ? "▲ en hausse" : "→ stable";
+    const trendLabel = trend <= -0.05 ? `${trendIconDown} en baisse` : trend >= 0.05 ? `${trendIconUp} en hausse` : `${trendIconFlat} stable`;
     const trendClass = trend <= -0.05 ? "trend-good" : trend >= 0.05 ? "trend-bad" : "trend-neutral";
 
     wrap.innerHTML = `
@@ -165,7 +169,7 @@ function renderUpcomingMaintenance() {
         .slice(0, 3);
 
     if (!top.length) {
-        container.innerHTML = "<p>Rien à signaler pour le moment 👍</p>";
+        container.innerHTML = '<p><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;color:var(--green);margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/></svg>Rien à signaler pour le moment</p>';
         return;
     }
 

@@ -6,7 +6,7 @@
 
     <title>T5 LifeBook</title>
 
-    <link rel="stylesheet" href="styles.css?v=50">
+    <link rel="stylesheet" href="styles.css?v=51">
 
     <!-- Icônes -->
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
@@ -31,12 +31,9 @@
 
 <!-- ===== ÉCRAN DE SYNCHRONISATION ===== -->
 <div class="sync-splash" id="syncSplash">
-    <div class="sync-glow"></div>
-
-    <div class="sync-poster-wrap">
-        <img src="sync-poster.jpg?v=1" alt="Van Life" class="sync-poster">
-        <div class="sync-poster-shimmer"></div>
-    </div>
+    <img src="sync-poster.jpg?v=1" alt="Van Life" class="sync-poster-bg">
+    <div class="sync-scrim"></div>
+    <div class="sync-poster-shimmer"></div>
 
     <p class="sync-text">Synchronisation avec Google Sheets<span class="sync-dots"><span>.</span><span>.</span><span>.</span></span></p>
 </div>
@@ -46,8 +43,8 @@
 <div class="modal-overlay hidden" id="kmModalOverlay">
     <div class="modal">
         <div class="modal-header">
-            <h2>📍 Kilométrage</h2>
-            <button class="modal-close" id="closeKmModal">✕</button>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg> Kilométrage</h2>
+            <button class="modal-close" id="closeKmModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
         <label for="currentKm">Kilométrage actuel</label>
         <input type="number" id="currentKm" placeholder="Ex : 170250">
@@ -63,8 +60,8 @@
 <div class="modal-overlay hidden" id="fuelModalOverlay">
     <div class="modal">
         <div class="modal-header">
-            <h2>⛽ Plein de carburant</h2>
-            <button class="modal-close" id="closeFuelModal">✕</button>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M3 21h11"/><path d="M7 8.5h4"/><path d="M14 10.5h2.2a1.8 1.8 0 0 1 1.8 1.8V17a1.5 1.5 0 0 0 3 0v-6l-2.3-2.3"/></svg> Plein de carburant</h2>
+            <button class="modal-close" id="closeFuelModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
         <label for="fuelDate">Date</label>
@@ -90,8 +87,8 @@
 <div class="modal-overlay hidden" id="maintenanceModalOverlay">
     <div class="modal">
         <div class="modal-header">
-            <h2>➕ Ajouter un entretien</h2>
-            <button class="modal-close" id="closeMaintenanceModal">✕</button>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5a5.5 5.5 0 0 1-7.44 5.16L6 20.2 3.8 18l7.54-7.56A5.5 5.5 0 0 1 18.5 3l-3.75 3.75 1.5 1.5L20 4.5c.63.9 1 1.99 1 3z"/></svg> Ajouter un entretien</h2>
+            <button class="modal-close" id="closeMaintenanceModal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
         <label for="maintenanceType">Type d'entretien</label>
@@ -119,7 +116,7 @@
 </div>
 
 <header class="header">
-    <h1>🚐 T5 LifeBook</h1>
+    <h1>T5 LifeBook</h1>
     <p>Volkswagen T5.1 4Motion DSG - CFCA 180 ch</p>
 </header>
 
@@ -183,13 +180,13 @@
         </div>
 
         <div class="card" id="statsCard">
-            <h2>📊 Statistiques carburant</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V13"/><path d="M11 20V8"/><path d="M17 20V4"/></svg> Statistiques carburant</h2>
             <div id="dashKpis" class="fuel-stats hidden"></div>
             <div id="consoChart"></div>
         </div>
 
         <div class="card" id="upcomingCard">
-            <h2>⏭ Prochains entretiens</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9h16"/><path d="M8 3v3M16 3v3"/><path d="M9 14l2 2 4-4"/></svg> Prochains entretiens</h2>
             <div id="upcomingList"><p>Aucune donnée.</p></div>
         </div>
 
@@ -199,7 +196,7 @@
     <section class="page" id="page-entretien">
         <div class="card">
             <div class="card-title-row">
-                <h2>🛠 Entretien</h2>
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7.5a5.5 5.5 0 0 1-7.44 5.16L6 20.2 3.8 18l7.54-7.56A5.5 5.5 0 0 1 18.5 3l-3.75 3.75 1.5 1.5L20 4.5c.63.9 1 1.99 1 3z"/></svg> Entretien</h2>
                 <button class="mini-btn" id="openMaintenanceBtnCard">+ Ajouter</button>
             </div>
             <div id="maintenanceList"></div>
@@ -209,7 +206,7 @@
     <!-- ===================== PAGE : CARBURANT ===================== -->
     <section class="page" id="page-carburant">
         <div class="card" id="fuelHistoryCard">
-            <h2>⛽ Historique carburant</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M3 21h11"/><path d="M7 8.5h4"/><path d="M14 10.5h2.2a1.8 1.8 0 0 1 1.8 1.8V17a1.5 1.5 0 0 0 3 0v-6l-2.3-2.3"/></svg> Historique carburant</h2>
             <div id="fuelStats" class="fuel-stats hidden"></div>
             <div id="fuelList"><p>Aucun plein enregistré.</p></div>
         </div>
@@ -218,7 +215,7 @@
     <!-- ===================== PAGE : HISTORIQUE ===================== -->
     <section class="page" id="page-historique">
         <div class="card">
-            <h2>📚 Historique</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11a9 9 0 1 1 2.6 6.3"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg> Historique</h2>
             <div id="historyList">
                 <p>Aucun historique enregistré.</p>
             </div>
@@ -228,7 +225,7 @@
     <!-- ===================== PAGE : RÉGLAGES ===================== -->
     <section class="page" id="page-reglages">
         <div class="card">
-            <h2>🚐 Informations véhicule</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16V9.5a1 1 0 0 1 .3-.7l2-2A1 1 0 0 1 7 6.5h10a1 1 0 0 1 .7.3l2 2a1 1 0 0 1 .3.7V16"/><path d="M3 16h18v2a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-.5h-11V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><circle cx="7.5" cy="16" r="1.6"/><circle cx="16.5" cy="16" r="1.6"/><path d="M6 11h12"/></svg> Informations véhicule</h2>
             <div class="stat">
                 <span>VIN</span>
                 <strong>WV1ZZZ7HZEH003985</strong>
@@ -244,7 +241,7 @@
         </div>
 
         <div class="card">
-            <h2>☁️ Passerelle Google Sheets</h2>
+            <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .6-7.96A5.5 5.5 0 0 0 7.2 8.1 4 4 0 0 0 7 18z"/></svg> Passerelle Google Sheets</h2>
             <div class="input-group">
                 <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
                 <button id="saveCloudBtn">Enregistrer</button>
@@ -314,12 +311,13 @@
 
 <script src="app.js?v=43"></script>
 <script src="cloud-merge.js?v=1"></script>
-<script src="maintenance-data.js?v=1"></script>
+<script src="status-icons.js?v=1"></script>
+<script src="maintenance-data.js?v=2"></script>
 <script src="nav.js?v=43"></script>
-<script src="charts.js?v=2"></script>
-<script src="custom-maintenance.js?v=1"></script>
-<script src="maintenance-list.js?v=1"></script>
-<script src="history-list.js?v=1"></script>
+<script src="charts.js?v=3"></script>
+<script src="custom-maintenance.js?v=2"></script>
+<script src="maintenance-list.js?v=2"></script>
+<script src="history-list.js?v=2"></script>
 <script src="dashboard-hero.js?v=1"></script>
 <script src="sync-splash.js?v=2"></script>
 </body>

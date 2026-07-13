@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (select.querySelector('option[value="__autre__"]')) return;
         const opt = document.createElement("option");
         opt.value = "__autre__";
-        opt.textContent = "➕ Autre (à préciser)";
+        opt.textContent = "Autre (à préciser)";
         select.appendChild(opt);
     }
 });

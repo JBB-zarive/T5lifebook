@@ -1,22 +1,44 @@
 // =======================================
 // T5 LifeBook - maintenance-data.js
 // Helper partagé : calcule une liste unifiée des
-// entretiens triée par urgence, + fournit les icônes
-// SVG associées à chaque type. Réutilisé par
+// entretiens triée par urgence RÉELLE (km/mois restants,
+// pas % d'intervalle consommé — voir plus bas), + fournit
+// les icônes SVG associées à chaque type. Réutilisé par
 // maintenance-list.js (page Entretien) et charts.js
 // (widget "prochains entretiens" du dashboard).
 //
 // Réutilise les helpers/consts déjà définis par app.js
 // (MAINTENANCE_TYPES, getVehicleKm, getMaintenances,
 // getLastMaintenanceForType, ENGINE_REPLACEMENT_KM,
-// ENGINE_REPLACEMENT_ISO, formatKm, formatDateFr) sans
-// jamais les modifier.
+// ENGINE_REPLACEMENT_ISO, formatKm, formatDateFr, getKmHistory,
+// parseDateForSort) sans jamais les modifier.
 // =======================================
+
+// Estime le rythme de roulage (km/mois) à partir de l'historique
+// kilométrique réel, pour pouvoir comparer un entretien "temporel"
+// (ex. liquide de frein, 2 ans) à un entretien "kilométrique" sur
+// UNE SEULE échelle commune (km restants estimés). Se rabat sur une
+// moyenne raisonnable (15 000 km/an) si l'historique est trop court.
+function estimateKmPerMonth() {
+    const FALLBACK = 1250; // ~15 000 km/an
+    const history = getKmHistory();
+    if (!history || history.length < 2) return FALLBACK;
+
+    const sorted = history.slice().sort((a, b) => parseDateForSort(a.date) - parseDateForSort(b.date));
+    const first = sorted[0];
+    const last = sorted[sorted.length - 1];
+    const days = (parseDateForSort(last.date) - parseDateForSort(first.date)) / (1000 * 60 * 60 * 24);
+    const kmDiff = Number(last.km) - Number(first.km);
+
+    if (days < 30 || kmDiff <= 0) return FALLBACK;
+    return (kmDiff / days) * 30.44;
+}
 
 function getMaintenanceUrgencyList() {
     const currentKm    = getVehicleKm();
     const maintenances = getMaintenances();
     const now          = new Date();
+    const kmPerMonth   = estimateKmPerMonth();
     const results      = [];
 
     MAINTENANCE_TYPES.forEach(type => {
@@ -25,26 +47,34 @@ function getMaintenanceUrgencyList() {
         const lastDate = last ? new Date(last.date + "T00:00:00") : null;
 
         if (type.group === "km" || type.group === "dual") {
-            const baseKm  = lastKm !== null ? lastKm : ENGINE_REPLACEMENT_KM;
-            const kmSince = Math.max(0, currentKm - baseKm);
-            let ratio     = Math.min((kmSince / type.interval) * 100, 100);
-            let detail    = `${formatKm(Math.max(0, type.interval - kmSince))} restants`;
+            const baseKm      = lastKm !== null ? lastKm : ENGINE_REPLACEMENT_KM;
+            const kmSince     = Math.max(0, currentKm - baseKm);
+            const kmRemaining = Math.max(0, type.interval - kmSince);
+            let ratio         = Math.min((kmSince / type.interval) * 100, 100); // % pour la jauge visuelle
+            let detail        = `${formatKm(kmRemaining)} restants`;
+            let sortKm        = kmRemaining; // valeur utilisée pour le CLASSEMENT (km restants réels)
 
             if (type.group === "dual") {
-                const baseDate    = lastDate || new Date(ENGINE_REPLACEMENT_ISO + "T00:00:00");
-                const monthsSince = (now - baseDate) / (1000 * 60 * 60 * 24 * 30.44);
-                const ratioTime   = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
+                const baseDate         = lastDate || new Date(ENGINE_REPLACEMENT_ISO + "T00:00:00");
+                const monthsSince      = (now - baseDate) / (1000 * 60 * 60 * 24 * 30.44);
+                const monthsRemaining  = Math.max(0, type.intervalYears * 12 - monthsSince);
+                const ratioTime        = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
+                const kmEquivFromTime  = monthsRemaining * kmPerMonth;
+
+                // La jauge affiche la contrainte la plus stricte (km ou temps).
                 if (ratioTime > ratio) {
                     ratio  = ratioTime;
-                    const monthsLeft = Math.max(0, type.intervalYears * 12 - monthsSince);
-                    detail = `${Math.round(monthsLeft)} mois restants`;
+                    detail = `${Math.round(monthsRemaining)} mois restants`;
                 }
+                // Le classement retient aussi la contrainte la plus proche.
+                sortKm = Math.min(sortKm, kmEquivFromTime);
             }
 
             results.push({
                 name: type.name,
                 ratio,
                 detail,
+                sortKm,
                 sub: last ? `Dernier : ${formatKm(last.km)} • ${formatDateFr(last.date)}` : "Base : moteur neuf",
                 hasGauge: true
             });
@@ -53,34 +83,38 @@ function getMaintenanceUrgencyList() {
 
         if (type.group === "time") {
             if (last && lastDate) {
-                const monthsSince = (now - lastDate) / (1000 * 60 * 60 * 24 * 30.44);
-                const ratio       = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
-                const monthsLeft  = Math.max(0, type.intervalYears * 12 - monthsSince);
+                const monthsSince     = (now - lastDate) / (1000 * 60 * 60 * 24 * 30.44);
+                const ratio           = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
+                const monthsRemaining = Math.max(0, type.intervalYears * 12 - monthsSince);
                 results.push({
                     name: type.name,
                     ratio,
-                    detail: monthsLeft < 1 ? "Échéance dépassée" : `${Math.round(monthsLeft)} mois restants`,
+                    detail: monthsRemaining < 1 ? "Échéance dépassée" : `${Math.round(monthsRemaining)} mois restants`,
+                    sortKm: monthsRemaining * kmPerMonth,
                     sub: `Dernier : ${formatDateFr(last.date)}`,
                     hasGauge: true
                 });
             } else {
-                results.push({ name: type.name, ratio: -1, detail: "Non renseigné", sub: "Aucune donnée", hasGauge: false });
+                results.push({ name: type.name, ratio: -1, detail: "Non renseigné", sortKm: Infinity, sub: "Aucune donnée", hasGauge: false });
             }
             return;
         }
 
-        // Groupe "info" : pas d'intervalle, pas de jauge
+        // Groupe "info" : pas d'intervalle, pas de jauge, pas de classement par urgence
         const kmSince = lastKm !== null ? Math.max(0, currentKm - lastKm) : null;
         results.push({
             name: type.name,
             ratio: -1,
             detail: kmSince !== null ? formatKm(kmSince) + " depuis intervention" : "Non renseigné",
+            sortKm: Infinity,
             sub: last ? `Dernier : ${formatKm(last.km)} • ${formatDateFr(last.date)}` : "Aucune donnée",
             hasGauge: false
         });
     });
 
-    const withGauge    = results.filter(r => r.hasGauge).sort((a, b) => b.ratio - a.ratio);
+    // Classement par km (ou équivalent-km) restants réels, ascendant :
+    // le moins de km restants = le plus urgent = en premier.
+    const withGauge    = results.filter(r => r.hasGauge).sort((a, b) => a.sortKm - b.sortKm);
     const withoutGauge = results.filter(r => !r.hasGauge);
     return withGauge.concat(withoutGauge);
 }
@@ -112,4 +146,16 @@ function maintenanceIconSVG(name) {
     const inner = MAINTENANCE_ICONS[name] ||
         '<path d="M21 7.5a5.5 5.5 0 0 1-7.44 5.16L6 20.2 3.8 18l7.54-7.56A5.5 5.5 0 0 1 18.5 3l-3.75 3.75 1.5 1.5L20 4.5c.63.9 1 1.99 1 3z"/>';
     return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
+
+// Petite icône véhicule générique, réutilisée là où l'app évoque
+// "le véhicule" en général (ex. carte Informations véhicule).
+function vehicleIconSVG() {
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 16V9.5a1 1 0 0 1 .3-.7l2-2A1 1 0 0 1 7 6.5h10a1 1 0 0 1 .7.3l2 2a1 1 0 0 1 .3.7V16"/>
+        <path d="M3 16h18v2a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-.5h-11V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/>
+        <circle cx="7.5" cy="16" r="1.6"/>
+        <circle cx="16.5" cy="16" r="1.6"/>
+        <path d="M6 11h12"/>
+    </svg>`;
 }
