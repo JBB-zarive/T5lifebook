@@ -29,6 +29,46 @@
      laisse le contenu défiler sous la zone système sinon. -->
 <div class="status-bar-fill"></div>
 
+<!-- ===== ÉCRAN DE SYNCHRONISATION (van sur planète) ===== -->
+<div class="sync-splash" id="syncSplash">
+    <div class="sync-scene">
+        <div class="sync-stars"></div>
+        <div class="sync-hills"></div>
+        <div class="sync-planet"></div>
+
+        <div class="sync-van">
+            <div class="sync-dust">
+                <span></span><span></span><span></span>
+            </div>
+            <svg viewBox="0 0 140 64" class="van-svg" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="30" y1="10" x2="96" y2="10"/>
+                <line x1="36" y1="10" x2="36" y2="14"/>
+                <line x1="60" y1="10" x2="60" y2="14"/>
+                <line x1="84" y1="10" x2="84" y2="14"/>
+                <rect x="40" y="4" width="14" height="5" rx="1"/>
+                <path d="M8 46V28c0-3 2-5 5-6l14-4h55c8 0 15 3 20 9l8 9h6c2 0 4 2 4 4v6c0 3-2 5-5 5H10c-2 0-3-1-3-3z"/>
+                <path d="M30 24V19l12-1h20v6"/>
+                <line x1="50" y1="18" x2="50" y2="24"/>
+                <g class="van-wheel">
+                    <circle cx="30" cy="48" r="8"/>
+                    <circle cx="30" cy="48" r="2.4"/>
+                    <line x1="30" y1="41" x2="30" y2="55"/>
+                    <line x1="23" y1="48" x2="37" y2="48"/>
+                </g>
+                <g class="van-wheel">
+                    <circle cx="98" cy="48" r="8"/>
+                    <circle cx="98" cy="48" r="2.4"/>
+                    <line x1="98" y1="41" x2="98" y2="55"/>
+                    <line x1="91" y1="48" x2="105" y2="48"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <p class="sync-text">Synchronisation avec Google Sheets<span class="sync-dots"><span>.</span><span>.</span><span>.</span></span></p>
+</div>
+
+
 <!-- ===== MODAL KILOMÉTRAGE ===== -->
 <div class="modal-overlay hidden" id="kmModalOverlay">
     <div class="modal">
@@ -147,36 +187,43 @@
     <!-- ===================== PAGE : TABLEAU DE BORD ===================== -->
     <section class="page" id="page-dashboard">
 
-        <div class="card hero-card">
-            <h2>🚐 Véhicule</h2>
-            <div class="stat">
-                <span>VIN</span>
-                <strong>WV1ZZZ7HZEH003985</strong>
+        <div class="card hero-card" id="heroCard">
+            <div class="hero-van">
+                <svg viewBox="0 0 140 64" class="van-svg" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="30" y1="10" x2="96" y2="10"/>
+                    <line x1="36" y1="10" x2="36" y2="14"/>
+                    <line x1="60" y1="10" x2="60" y2="14"/>
+                    <line x1="84" y1="10" x2="84" y2="14"/>
+                    <rect x="40" y="4" width="14" height="5" rx="1"/>
+                    <path d="M8 46V28c0-3 2-5 5-6l14-4h55c8 0 15 3 20 9l8 9h6c2 0 4 2 4 4v6c0 3-2 5-5 5H10c-2 0-3-1-3-3z"/>
+                    <path d="M30 24V19l12-1h20v6"/>
+                    <line x1="50" y1="18" x2="50" y2="24"/>
+                    <circle cx="30" cy="48" r="8"/>
+                    <circle cx="98" cy="48" r="8"/>
+                    <circle cx="30" cy="48" r="2.4"/>
+                    <circle cx="98" cy="48" r="2.4"/>
+                </svg>
             </div>
-            <div class="stat">
-                <span>Immatriculation</span>
-                <strong>CW-374-CL</strong>
-            </div>
-            <div class="stat">
-                <span>Modèle</span>
-                <strong>T5.1 - 4Motion</strong>
-            </div>
-            <div class="stat">
-                <span>Km châssis</span>
-                <strong id="vehicleKm">170 000 km</strong>
-            </div>
-            <div class="stat">
-                <span>Km moteur</span>
-                <strong id="engineKm">0 km • remplacé le 19/06/2026</strong>
-            </div>
-        </div>
 
-        <div class="card">
-            <h2>🎯 Objectif 400 000 km</h2>
-            <div class="progress-container">
-                <div class="progress-bar" id="vehicleProgress"></div>
+            <div class="hero-ring-wrap">
+                <svg class="hero-ring" viewBox="0 0 200 200">
+                    <defs>
+                        <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#2563eb"/>
+                            <stop offset="100%" stop-color="#60a5fa"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="ring-bg" cx="100" cy="100" r="86"></circle>
+                    <circle class="ring-fg" id="vehicleRingFg" cx="100" cy="100" r="86"></circle>
+                </svg>
+                <div class="hero-ring-center">
+                    <strong id="vehicleKm">170 000 km</strong>
+                    <span id="vehicleRingPercent">0 %</span>
+                </div>
             </div>
-            <p id="vehicleProgressText">170 060 / 400 000 km</p>
+
+            <p class="hero-goal-text" id="vehicleProgressText">170 060 / 400 000 km</p>
+            <p class="hero-engine" id="engineKm">0 km • remplacé le 19/06/2026</p>
         </div>
 
         <div class="card" id="statsCard">
@@ -225,6 +272,22 @@
     <!-- ===================== PAGE : RÉGLAGES ===================== -->
     <section class="page" id="page-reglages">
         <div class="card">
+            <h2>🚐 Informations véhicule</h2>
+            <div class="stat">
+                <span>VIN</span>
+                <strong>WV1ZZZ7HZEH003985</strong>
+            </div>
+            <div class="stat">
+                <span>Immatriculation</span>
+                <strong>CW-374-CL</strong>
+            </div>
+            <div class="stat">
+                <span>Modèle</span>
+                <strong>T5.1 - 4Motion</strong>
+            </div>
+        </div>
+
+        <div class="card">
             <h2>☁️ Passerelle Google Sheets</h2>
             <div class="input-group">
                 <input type="url" id="cloudUrl" placeholder="URL Google Apps Script">
@@ -232,6 +295,7 @@
             </div>
             <div class="button-row">
                 <button class="secondary-btn" id="testCloudBtn">Tester</button>
+                <button class="secondary-btn" id="checkCloudBtn">Vérifier maintenant</button>
                 <button class="secondary-btn" id="syncAllBtn">Synchroniser</button>
                 <button class="secondary-btn" id="restoreCloudBtn">Restaurer</button>
             </div>
@@ -293,8 +357,13 @@
 </nav>
 
 <script src="app.js?v=43"></script>
+<script src="cloud-merge.js?v=1"></script>
+<script src="maintenance-data.js?v=1"></script>
 <script src="nav.js?v=43"></script>
-<script src="charts.js?v=1"></script>
+<script src="charts.js?v=2"></script>
 <script src="custom-maintenance.js?v=1"></script>
+<script src="maintenance-list.js?v=1"></script>
+<script src="dashboard-hero.js?v=1"></script>
+<script src="sync-splash.js?v=2"></script>
 </body>
 </html>

@@ -160,51 +160,8 @@ function renderUpcomingMaintenance() {
     const container = document.getElementById("upcomingList");
     if (!container) return;
 
-    const currentKm    = getVehicleKm();
-    const maintenances = getMaintenances();
-    const now          = new Date();
-
-    const results = [];
-
-    MAINTENANCE_TYPES.forEach(type => {
-        const last     = getLastMaintenanceForType(type.name, maintenances);
-        const lastKm   = last ? Number(last.km) : null;
-        const lastDate = last ? new Date(last.date + "T00:00:00") : null;
-
-        if (type.group === "km" || type.group === "dual") {
-            const baseKm  = lastKm !== null ? lastKm : ENGINE_REPLACEMENT_KM;
-            const kmSince = Math.max(0, currentKm - baseKm);
-            const ratioKm = Math.min((kmSince / type.interval) * 100, 100);
-
-            let ratio = ratioKm;
-            let detail = `${formatKm(Math.max(0, type.interval - kmSince))} restants`;
-
-            if (type.group === "dual") {
-                const baseDate    = lastDate || new Date(ENGINE_REPLACEMENT_ISO + "T00:00:00");
-                const monthsSince = (now - baseDate) / (1000 * 60 * 60 * 24 * 30.44);
-                const ratioTime   = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
-                if (ratioTime > ratio) {
-                    ratio  = ratioTime;
-                    const monthsLeft = Math.max(0, type.intervalYears * 12 - monthsSince);
-                    detail = `${Math.round(monthsLeft)} mois restants`;
-                }
-            }
-
-            results.push({ name: type.name, ratio, detail });
-            return;
-        }
-
-        if (type.group === "time" && last && lastDate) {
-            const monthsSince = (now - lastDate) / (1000 * 60 * 60 * 24 * 30.44);
-            const ratio       = Math.min((monthsSince / (type.intervalYears * 12)) * 100, 100);
-            const monthsLeft  = Math.max(0, type.intervalYears * 12 - monthsSince);
-            results.push({ name: type.name, ratio, detail: monthsLeft < 1 ? "échéance dépassée" : `${Math.round(monthsLeft)} mois restants` });
-        }
-    });
-
-    const top = results
-        .filter(r => r.ratio > 0)
-        .sort((a, b) => b.ratio - a.ratio)
+    const top = getMaintenanceUrgencyList()
+        .filter(item => item.hasGauge && item.ratio > 0)
         .slice(0, 3);
 
     if (!top.length) {
@@ -213,7 +170,7 @@ function renderUpcomingMaintenance() {
     }
 
     container.innerHTML = top.map(item => {
-        const cls = item.ratio >= 100 ? "danger" : item.ratio >= 80 ? "warning" : "ok";
+        const cls = maintenanceUrgencyClass(item.ratio);
         return `
         <div class="maintenance-item">
             <div class="maintenance-header">
