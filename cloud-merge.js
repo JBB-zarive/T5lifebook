@@ -1,11 +1,21 @@
 // =======================================
 // T5 LifeBook - cloud-merge.js
-// Fusion bidirectionnelle "append-only" avec Google Sheets :
-//   - une ligne connue seulement en local  → poussée vers Google
+// Fusion "append-only" avec Google Sheets — jamais de suppression,
+// jamais de remplacement en masse (contrairement à "Restaurer" qui
+// reste un choix manuel et explicite de l'utilisateur) :
 //   - une ligne connue seulement dans Google → rapatriée en local
-//   - une ligne connue des deux côtés       → on n'y touche pas
-// Jamais de suppression, jamais de remplacement en masse (contrairement
-// à "Restaurer" qui reste un choix manuel et explicite de l'utilisateur).
+//   - une ligne connue seulement en local    → signalée comme "à envoyer"
+//   - une ligne connue des deux côtés        → on n'y touche pas
+//
+// IMPORTANT — principe de sauvegarde : la vérification AUTOMATIQUE et
+// silencieuse au démarrage ne fait JAMAIS d'envoi vers Google, seulement
+// du rapatriement. L'envoi (syncAll) ne se déclenche que sur une action
+// explicite : une sauvegarde normale (gérée par app.js, inchangée) ou un
+// appui manuel sur "Vérifier maintenant" / "Synchroniser". Un envoi
+// automatique et invisible juste après une réinstallation (stockage
+// local remis aux données d'origine) provoquait des doublons dans le
+// Sheet ; on ne pousse donc plus jamais sans une action visible de
+// l'utilisateur.
 //
 // Reconnaissance : par identifiant stable en priorité ; repli sur une
 // clé date + kilométrage (+ type pour les entretiens, + litres pour le
@@ -130,6 +140,7 @@ function mergeTable(opts) {
 
     if (toAppend.length > 0) {
         let merged = toAppend.concat(localItems);
+        merged = dedupeByIdKeepingFirst(merged); // filet de sécurité local
         if (typeof opts.sortFn === "function") merged = merged.sort(opts.sortFn);
         localStorage.setItem(opts.localSetterKey, JSON.stringify(merged));
     }
@@ -142,6 +153,20 @@ function mergeTable(opts) {
     });
 
     return { imported: toAppend.length, pushed };
+}
+
+// Filet de sécurité local : ne garde qu'une seule entrée par id, même
+// si un id venait à apparaître deux fois (protège l'affichage sur le
+// téléphone, en plus de la déduplication ajoutée côté script Google).
+function dedupeByIdKeepingFirst(items) {
+    const seen = new Set();
+    const result = [];
+    items.forEach(item => {
+        if (item.id && seen.has(item.id)) return;
+        if (item.id) seen.add(item.id);
+        result.push(item);
+    });
+    return result;
 }
 
 function mergeCloudData(cloudData) {
@@ -193,48 +218,18 @@ function recomputeVehicleKm() {
     }
 }
 
-// Push silencieux (sans passer par syncAll(), qui met à jour le texte
-// de statut de la page Réglages — utilisé uniquement pour la vérification
-// automatique et silencieuse au lancement).
-function silentPushToCloud() {
-    const kilometrages = getKmHistory().map(item => ({
-        id: item.id || makeId(),
-        date_saisie: item.date || item.date_saisie || "",
-        km_chassis: item.km || item.km_chassis || "",
-        km_moteur: item.engineKm ?? item.km_moteur ?? 0,
-        source: item.source || "application",
-        note: item.note || ""
-    }));
-
-    const entretiens = getMaintenances().map(item => ({
-        id: item.id || makeId(),
-        date: item.date || "",
-        km_chassis: item.km || item.km_chassis || "",
-        km_moteur: item.engineKm ?? item.km_moteur ?? 0,
-        type: item.type || "Autre",
-        description: item.notes || item.description || "",
-        cout: item.cout || "",
-        note: item.note || ""
-    }));
-
-    const carburant = getFuelHistory().map(item => ({
-        id: item.id || makeId(),
-        date: item.date || "",
-        km_chassis: item.km || item.km_chassis || "",
-        km_moteur: item.engineKm ?? item.km_moteur ?? 0,
-        litres: item.liters || item.litres || "",
-        montant: item.price || item.montant || item.prix_total || "",
-        prix_litre: item.pricePerL || item.prix_litre || "",
-        note: item.note || ""
-    }));
-
-    return cloudPost({ action: "sync", kilometrages, entretiens, carburant });
-}
-
 // -------------------------------------------------------------------
 // Point d'entrée. silent=true (lancement auto) : jamais de message,
-// jamais d'alerte. silent=false (bouton "Vérifier maintenant") : un
-// vrai retour via updateCloudStatus(), comme les autres actions cloud.
+// jamais d'alerte, et surtout — jamais d'envoi vers Google. On ne fait
+// que rapatrier ce qui manque en local. Un envoi automatique et
+// invisible juste après une réinstallation (stockage local remis aux
+// données d'origine) est ce qui provoquait des doublons dans le Sheet ;
+// l'envoi ne se déclenche donc plus QUE sur une action explicite :
+// une sauvegarde normale (inchangée, gérée par app.js), ou un appui sur
+// "Vérifier maintenant" / "Synchroniser".
+// silent=false (bouton "Vérifier maintenant") : un vrai retour via
+// updateCloudStatus(), comme les autres actions cloud, et l'envoi reste
+// possible si des données locales manquent côté cloud.
 // -------------------------------------------------------------------
 async function runCloudMerge(options) {
     options = options || {};
@@ -257,12 +252,10 @@ async function runCloudMerge(options) {
             if (typeof window.updateDashboard === "function") window.updateDashboard();
         }
 
-        if (summary.pushed > 0) {
-            if (silent) {
-                silentPushToCloud().catch(() => {});
-            } else {
-                syncAll().catch(() => {});
-            }
+        // Envoi vers Google : uniquement sur vérification manuelle,
+        // jamais depuis la vérification automatique et silencieuse.
+        if (summary.pushed > 0 && !silent) {
+            syncAll().catch(() => {});
         }
 
         if (!silent) {
